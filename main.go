@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"text/tabwriter"
 
 	"github.com/charmbracelet/glamour"
 	"golang.org/x/crypto/ssh"
@@ -142,14 +143,23 @@ func main() {
 
 						cmds := map[string]func([]string){
 							"help": func(args []string) {
-								fmt.Fprintln(term, `HACK CLUB JOBS TERMINAL, version 1.0.0-release (x86_64).
+								fmt.Fprintln(term, "HACK CLUB JOBS TERMINAL, version 1.0.0-release (x86_64).")
 
-These shell commands are defined internally. Type `+"`help`"+` to see this list.
+								fmt.Fprintln(term,"These shell commands are defined internally. Type `+\"`help`\"+` to see this list.")
+								// use tabwriter to neatly format command help
+								helpWriter := tabwriter.NewWriter(term, 8, 8,0,'\t',0)
+								commands := [][]string{
+									[]string{"ls","list contents of current directory"},
+									[]string{"cat [file]","display contents of current file"},
+									[]string{"exit","exits the terminal"},
+								}
+								for _, command := range commands {
+									fmt.Fprintf(helpWriter,"%s\t%s\r\n", command[0], command[1])
+								}
+								helpWriter.Flush()
+								fmt.Fprintln(term,"psst! try running 'ls' to get started")
 
- ls		list contents of current directory
- cat [file]	display contents of current file
- 
-psst! try running 'ls' to get started`)
+
 							},
 							"ls": func(args []string) {
 								fileNames := make([]string, len(files))
@@ -267,6 +277,10 @@ psst! try running 'ls' to get started`)
 
 								fmt.Fprint(term, "\r"+strings.Join(contentLines[linesToShow:], "\n"))
 								fmt.Fprint(term, "\n\n(easier to read this file online? "+file[1]+")")
+							},
+							"exit" : func(args[] string) {
+								fmt.Fprintln(term, "meow! see yoou later!")
+								channel.Close()
 							},
 						}
 
