@@ -135,7 +135,7 @@ func main() {
 					term := terminal.NewTerminal(channel, `\(•◡•)/ ~> $ `)
 
 					session := Session{
-						Width:    80, // hardcoded for now
+						Width:    72, // hardcoded for now
 						Height:   42, // same here
 						Terminal: term,
 					}
@@ -214,7 +214,7 @@ psst! try running 'ls' to get started`)
 
 								r, err := glamour.NewTermRenderer(
 									glamour.WithEnvironmentConfig(),
-									glamour.WithWordWrap(int(session.Width)),
+									glamour.WithWordWrap(int(session.Width-3)), // (-3 for space for line numbers)
 									glamour.WithBaseURL(file[1]),
 								)
 								if err != nil {
@@ -249,7 +249,7 @@ psst! try running 'ls' to get started`)
 
 								contentLines := strings.Split(content, "\n")
 
-								linesToShow := 12
+								linesToShow := 14
 								secondsToWait := 15
 
 								if len(contentLines) <= linesToShow {
@@ -272,6 +272,7 @@ psst! try running 'ls' to get started`)
 								}
 
 								fmt.Fprint(term, "\r"+strings.Join(contentLines[linesToShow:], "\n"))
+								fmt.Fprint(term, "\n\n(easier to read this file online? "+file[1]+")")
 							},
 						}
 
