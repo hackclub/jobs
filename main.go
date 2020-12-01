@@ -132,10 +132,18 @@ func (g GistService) FileContents(fileName string) (string, error) {
 	return cachedGist.Content, nil
 }
 
-func (g GistService) FileRendered(fileName string) (string, error) {
+func (g GistService) FileRendered(fileName string, darkOrLight string) (string, error) {
 	var cachedGist gistCache
 	if cached, exists := g.cachedGists[fileName]; exists {
 		cachedGist = cached
+	}
+
+	if darkOrLight != "light" && darkOrLight != "dark" && darkOrLight != "" {
+		return "", errors.New("invalid style")
+	}
+
+	if darkOrLight == "" {
+		darkOrLight = "dark"
 	}
 
 	// if possible, just return the prerendered stuff we have
@@ -151,7 +159,7 @@ func (g GistService) FileRendered(fileName string) (string, error) {
 	}
 
 	r, err := glamour.NewTermRenderer(
-		glamour.WithEnvironmentConfig(),
+		glamour.WithStandardStyle(darkOrLight),
 		glamour.WithWordWrap(int(globalTerminalWidth-3)), // 72 default width, (-3 for space for line numbers)
 		glamour.WithBaseURL(g.FileURL(fileName)),
 	)
@@ -356,7 +364,7 @@ list.
 
 								commands := [][]string{
 									[]string{"ls", "list contents of current directory"},
-									[]string{"cat [file]", "display contents of current file"},
+									[]string{"cat [file] [dark or light]", "display contents of current file"},
 									[]string{"exit", "exit the terminal"},
 								}
 
@@ -379,6 +387,11 @@ list.
 								}
 
 								argFile := args[0]
+								var darkOrLight string
+
+								if len(args) > 1 {
+									darkOrLight = args[1]
+								}
 
 								if !gists.FileExists(argFile) {
 									fmt.Fprintln(term, "meow! i can't find the file", argFile)
@@ -388,8 +401,9 @@ list.
 								meowText := "  m e e o o o w !  "
 								typewrite(term, 100*time.Millisecond, meowText)
 
-								content, err := gists.FileRendered(argFile)
+								content, err := gists.FileRendered(argFile, darkOrLight)
 								if err != nil {
+									fmt.Println(err)
 									fmt.Fprintln(term, "meow... i am having trouble accessing my brain (file retrieval error)")
 									return
 								}
@@ -401,7 +415,15 @@ list.
 
 								linesToShow := 14
 
-								exitMsg := "easier to read this file online? " + gists.FileURL(argFile) + " ~(˘▾˘~)"
+								var exitMsg string
+
+								if darkOrLight == "" || darkOrLight == "dark" {
+									exitMsg += " ~ psst. you can switch to light mode with `cat [file] light` ~"
+								} else {
+									exitMsg += " ~ psst. you can switch to dark mode with `cat [file] dark` ~"
+								}
+
+								exitMsg += "\r\n\n easier to read this file online? " + gists.FileURL(argFile) + " ~(˘▾˘~)"
 
 								// if we don't need to page, print and exit
 								if len(contentLines) <= linesToShow {
@@ -459,7 +481,7 @@ list.
 								goodbye := []string{
 									"JOBS TERMINAL OUT. SEE YOU LATER!\r\n",
 									"\nCODE AT https://github.com/hackclub/jobs\r\n",
-									"\nWANT TO TRY SOMETHING FUN BY US? RUN $ ssh sshtron.zachlatta.com\r\n",
+									"\nWANT TO TRY SOMETHING FUN? RUN $ ssh sshtron.zachlatta.com\r\n",
 									"\n(~˘▾˘)~\n\n",
 								}
 
