@@ -6,7 +6,7 @@ Todo before launching:
     - [X] `exit` command
     - [X] Tab completion
     - [X] Better paging (can we get input midway through a command?)
-    - [ ] Write clever README
+    - [X] Write clever README
     - [ ] Periodically print currently connected users
     - [ ] Print commands users are running (maybe IP locations too?)
     - [ ] Print when users connect & disconnect
