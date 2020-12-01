@@ -17,6 +17,12 @@ import (
 	terminal "golang.org/x/term"
 )
 
+// optimize for terminals with 72 char width
+//
+// i haven't figured out how to get the terminal width from the ssh session, so
+// for the sake of time i'm hardcoding it.
+const globalTerminalWidth = 72
+
 func typewrite(w io.Writer, speed time.Duration, content string) {
 	chars := strings.Split(content, "")
 
@@ -144,7 +150,7 @@ func (g GistService) FileRendered(fileName string) (string, error) {
 
 	r, err := glamour.NewTermRenderer(
 		glamour.WithEnvironmentConfig(),
-		glamour.WithWordWrap(int(72-3)), // 72 default width, (-3 for space for line numbers)
+		glamour.WithWordWrap(int(globalTerminalWidth-3)), // 72 default width, (-3 for space for line numbers)
 		glamour.WithBaseURL(g.FileURL(fileName)),
 	)
 	if err != nil {
@@ -184,12 +190,6 @@ func (g GistService) FileRendered(fileName string) (string, error) {
 	g.cachedGists[fileName] = cachedGist
 
 	return cachedGist.Rendered, nil
-}
-
-type Session struct {
-	Width    int
-	Height   int
-	Terminal *terminal.Terminal
 }
 
 func main() {
@@ -302,12 +302,6 @@ func main() {
 
 					term := terminal.NewTerminal(channel, `\(•◡•)/ ~> $ `)
 
-					session := Session{
-						Width:    72, // hardcoded for now
-						Height:   42, // same here
-						Terminal: term,
-					}
-
 					for {
 
 						cmds := map[string]func([]string){
@@ -405,7 +399,7 @@ list.
 							},
 						}
 
-						line, err := session.Terminal.ReadLine()
+						line, err := term.ReadLine()
 						if err != nil {
 							break
 						}
