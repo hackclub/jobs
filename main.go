@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -202,6 +203,15 @@ func (g GistService) FileRendered(fileName string, darkOrLight string) (string, 
 	return cachedGist.Rendered, nil
 }
 
+// Func handling user connections
+var usercon int
+
+func GetConUsers(connecteduser int) string {
+	usercount := strconv.Itoa(usercon)
+	return usercount
+
+}
+
 func main() {
 	var sshPort string
 
@@ -296,7 +306,8 @@ func main() {
 
 						connectingSpeed += 50
 					}
-
+					usercon++
+					activeusers := GetConUsers(usercon)
 					connected := []string{
 						"\r..........................................................\n\r",
 						"\n\r",
@@ -306,6 +317,8 @@ func main() {
 						"\n\r",
 						"WELCOME TO THE HACK CLUB JOBS TERMINAL. PLEASE TYPE help TO BEGIN.\n\r",
 						"\n\r",
+						"         \n\r",
+						"ACTIVE USERS  ", activeusers, "\n\r",
 					}
 
 					typewriteLines(channel, 25*time.Millisecond, connected)
@@ -478,6 +491,7 @@ list.
 								fmt.Fprintln(term, exitMsg)
 							},
 							"exit": func(args []string) {
+								usercon--
 								goodbye := []string{
 									"JOBS TERMINAL OUT. SEE YOU LATER!\r\n",
 									"\nCODE AT https://github.com/hackclub/jobs\r\n",
