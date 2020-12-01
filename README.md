@@ -1,6 +1,6 @@
 # `$ ssh jobs.hackclub.com`
 
-![Demo of SSHing into jobs.hackclub.com](https://cloud-55xk6s8j5.vercel.app/0jobs-ssh-demo.gif)
+![Demo of SSHing into jobs.hackclub.com](https://cloud-4hoxiuf8u.vercel.app/0jobs.hackclub.com.gif)
 
 ````
    (  )   /\   _                 (     
