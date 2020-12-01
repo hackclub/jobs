@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -20,7 +21,14 @@ type Session struct {
 }
 
 func main() {
-	sshPort := ":9999"
+	var sshPort string
+
+	envSshPort := os.Getenv("SSH_PORT")
+	if envSshPort == "" {
+		sshPort = ":9999"
+	} else {
+		sshPort = ":" + envSshPort
+	}
 
 	config := &ssh.ServerConfig{
 		NoClientAuth: true,
