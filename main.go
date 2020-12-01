@@ -2,18 +2,34 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
 	"strings"
-	"time"
 	"text/tabwriter"
+	"time"
 
 	"github.com/charmbracelet/glamour"
 	"golang.org/x/crypto/ssh"
 	terminal "golang.org/x/term"
 )
+
+func typewrite(w io.Writer, speed time.Duration, content string) {
+	chars := strings.Split(content, "")
+
+	for _, c := range chars {
+		fmt.Fprint(w, c)
+		time.Sleep(speed)
+	}
+}
+
+func typewriteLines(w io.Writer, speed time.Duration, lines []string) {
+	for _, line := range lines {
+		typewrite(w, speed, line)
+	}
+}
 
 type Session struct {
 	Width    int
@@ -120,12 +136,7 @@ func main() {
 						"\n\r",
 					}
 
-					for _, l := range connected {
-						for _, c := range strings.Split(l, "") {
-							fmt.Fprint(channel, c)
-							time.Sleep(25 * time.Millisecond)
-						}
-					}
+					typewriteLines(channel, 25*time.Millisecond, connected)
 
 					term := terminal.NewTerminal(channel, `\(•◡•)/ ~> $ `)
 
@@ -143,23 +154,27 @@ func main() {
 
 						cmds := map[string]func([]string){
 							"help": func(args []string) {
-								fmt.Fprintln(term, "HACK CLUB JOBS TERMINAL, version 1.0.0-release (x86_64).")
+								fmt.Fprintln(term, `HACK CLUB JOBS TERMINAL, version 1.0.0-release (x86_64).
 
-								fmt.Fprintln(term,"These shell commands are defined internally. Type `+\"`help`\"+` to see this list.")
+These shell commands are defined internally. Type `+"`help`"+` to see this
+list.
+`)
+
 								// use tabwriter to neatly format command help
-								helpWriter := tabwriter.NewWriter(term, 8, 8,0,'\t',0)
+								helpWriter := tabwriter.NewWriter(term, 8, 8, 0, '\t', 0)
+
 								commands := [][]string{
-									[]string{"ls","list contents of current directory"},
-									[]string{"cat [file]","display contents of current file"},
-									[]string{"exit","exits the terminal"},
+									[]string{"ls", "list contents of current directory"},
+									[]string{"cat [file]", "display contents of current file"},
+									[]string{"exit", "exit the terminal"},
 								}
+
 								for _, command := range commands {
-									fmt.Fprintf(helpWriter,"%s\t%s\r\n", command[0], command[1])
+									fmt.Fprintf(helpWriter, " %s\t%s\r\n", command[0], command[1])
 								}
 								helpWriter.Flush()
-								fmt.Fprintln(term,"psst! try running 'ls' to get started")
 
-
+								fmt.Fprintln(term, "\npsst! try running 'ls' to get started")
 							},
 							"ls": func(args []string) {
 								fileNames := make([]string, len(files))
@@ -278,8 +293,16 @@ func main() {
 								fmt.Fprint(term, "\r"+strings.Join(contentLines[linesToShow:], "\n"))
 								fmt.Fprint(term, "\n\n(easier to read this file online? "+file[1]+")")
 							},
-							"exit" : func(args[] string) {
-								fmt.Fprintln(term, "meow! see yoou later!")
+							"exit": func(args []string) {
+								goodbye := []string{
+									"JOBS TERMINAL OUT. SEE YOU LATER!\r\n",
+									"\nCODE AT https://github.com/hackclub/jobs\r\n",
+									"\n\r(psst. did you find the easter egg?)\r\n",
+									"\n(~˘▾˘)~\n\n",
+								}
+
+								typewriteLines(term, 25*time.Millisecond, goodbye)
+
 								channel.Close()
 							},
 						}
