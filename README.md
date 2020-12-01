@@ -1,23 +1,21 @@
 # `$ ssh jobs.hackclub.com`
 
-Todo before launching:
+![Demo of SSHing into jobs.hackclub.com](https://cloud-55xk6s8j5.vercel.app/0jobs-ssh-demo.gif)
 
-- Basics
-    - [X] `exit` command
-    - [X] Tab completion
-    - [X] Better paging (can we get input midway through a command?)
-    - [X] Write clever README
-    - [ ] ~Periodically print currently connected users~
-    - [X] Print commands users are running (maybe IP locations too?)
-    - [ ] ~Print when users connect & disconnect~
-- GitHub Gists
-    - [X] Fix paren in links
-    - [X] Double new line before gist links
-    - [X] Cache loading of the GitHub gists
-- Markdown formatting
-    - [ ] Remove mailto link if possible
-- Magic
-    - [ ] More magic in intro - colors? emoji? give it a lot of character
-    - [ ] ~Hide some sort of easter egg? Dancing Orpheus~
-- Cleanup
-    - [X] Remove concept of per-session width / height. Make global.
+````
+   (  )   /\   _                 (     
+    \ |  (  \ ( \.(               )                      _____
+  \  \ \  `  `   ) \             (  ___                 / _   \
+ (_`    \+   . x  ( .\            \/   \____-----------/ (o)   \_
+- .-               \+  ;          (  O                           \____
+                 cool!    )        \_____________  `              \  /
+(__ Hack      is      - .( -'.- <. - _  VVVVVVV VV V\              \/
+(_____   Club    ._._: <_ - <- _  (--  _AAAAAAA__A_/                |
+  .    /./.+-  . .- /  +--  - .     \______________//_              \_______
+  (__ ' /x  / x _/ (                                  \___'          \     /
+ , x / ( '  . / .  /                                      |           \   /
+    /  /  _/ /    +                                      /              \/
+   '  (__/                                             /                  \
+
+says the friendly dragon. you listen and you agree with her.
+````
