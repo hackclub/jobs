@@ -17,7 +17,3 @@ vendor/
 
 # Directory for private key
 tmp/
-
-# IDE-specific directories
-.vscode/
-.idea/
