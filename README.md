@@ -8,8 +8,8 @@ Todo before launching:
     - [ ] Tab completion
     - [ ] Write clever README
 - GitHub Gists
-    - [ ] Fix paren in links
-    - [ ] Double new line before gist links
+    - [X] Fix paren in links
+    - [X] Double new line before gist links
     - [ ] Cache loading of the GitHub gists
 - Markdown formatting
     - [ ] Remove mailto link if possible

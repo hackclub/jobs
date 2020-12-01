@@ -274,7 +274,7 @@ list.
 								if len(contentLines) <= linesToShow {
 									fmt.Fprint(term, content)
 
-									fmt.Fprint(term, "\n\n(easier to read this file online? "+file[1]+")")
+									fmt.Fprintln(term, "\neasier to read this file online? "+file[1]+" ~(˘▾˘~)")
 									return
 								}
 
@@ -291,7 +291,7 @@ list.
 								}
 
 								fmt.Fprint(term, "\r"+strings.Join(contentLines[linesToShow:], "\n"))
-								fmt.Fprint(term, "\n\n(easier to read this file online? "+file[1]+")")
+								fmt.Fprintln(term, "\neasier to read this file online? "+file[1]+" ~(˘▾˘~)")
 							},
 							"exit": func(args []string) {
 								goodbye := []string{
