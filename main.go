@@ -94,9 +94,7 @@ func main() {
 
 					connecting := []string{
 						"...connecting...\r",
-						"...c.o.n.n.e.c.t.i.n.g...\r",
 						"...c..o..n..n..e..c..t..i..n..g...\r",
-						"...c...o...n...n...e....",
 					}
 
 					connectingSpeed := 100
@@ -107,12 +105,8 @@ func main() {
 							time.Sleep(time.Duration(connectingSpeed) * time.Millisecond)
 						}
 
-						connectingSpeed += 25
+						connectingSpeed += 50
 					}
-
-					fmt.Fprint(channel, "just kidding")
-
-					time.Sleep(1 * time.Second)
 
 					connected := []string{
 						"\r..........................................................\n\r",
