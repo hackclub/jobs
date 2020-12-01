@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -31,6 +32,160 @@ func typewriteLines(w io.Writer, speed time.Duration, lines []string) {
 	}
 }
 
+type gistCache struct {
+	Expiration time.Time
+	Content    string
+	Rendered   string
+}
+
+type GistService struct {
+	files       [][]string
+	cachedGists map[string]gistCache
+}
+
+func NewGistService(files [][]string) GistService {
+	return GistService{
+		files:       files,
+		cachedGists: map[string]gistCache{},
+	}
+}
+
+func (g GistService) FileNames() []string {
+	fileNames := make([]string, g.Count())
+
+	for i, f := range g.files {
+		fileNames[i] = f[0]
+	}
+
+	return fileNames
+}
+
+func (g GistService) Count() int {
+	return len(g.files)
+}
+
+// returns URL if file exists, empty string if not
+func (g GistService) FileURL(fileName string) string {
+	var url string
+
+	for _, f := range g.files {
+		if fileName == f[0] {
+			url = f[1]
+		}
+	}
+
+	return url
+}
+
+func (g GistService) FileExists(fileName string) bool {
+	return g.FileURL(fileName) != ""
+}
+
+func (g GistService) fetchRemoteGistContents(gistURL string) (string, error) {
+	rawGistURL := gistURL + "/raw"
+
+	resp, err := http.Get(rawGistURL)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	return string(body), nil
+}
+
+func (g GistService) FileContents(fileName string) (string, error) {
+	gistURL := g.FileURL(fileName)
+	if gistURL == "" {
+		return "", errors.New("file " + fileName + " does not exist")
+	}
+
+	var cachedGist gistCache
+	if cached, exists := g.cachedGists[fileName]; exists {
+		cachedGist = cached
+	}
+
+	if time.Now().After(cachedGist.Expiration) {
+		content, err := g.fetchRemoteGistContents(gistURL)
+		if err != nil {
+			return "", fmt.Errorf("error fetching remote gist: %v", err)
+		}
+
+		cachedGist.Content = content
+		cachedGist.Expiration = time.Now().Add(5 * time.Minute)
+	}
+
+	g.cachedGists[fileName] = cachedGist
+
+	return cachedGist.Content, nil
+}
+
+func (g GistService) FileRendered(fileName string) (string, error) {
+	var cachedGist gistCache
+	if cached, exists := g.cachedGists[fileName]; exists {
+		cachedGist = cached
+	}
+
+	// if possible, just return the prerendered stuff we have
+	if time.Now().Before(cachedGist.Expiration) && cachedGist.Rendered != "" {
+		return cachedGist.Rendered, nil
+	}
+
+	// else, do the whole shebang...
+
+	raw, err := g.FileContents(fileName)
+	if err != nil {
+		return "", err
+	}
+
+	r, err := glamour.NewTermRenderer(
+		glamour.WithEnvironmentConfig(),
+		glamour.WithWordWrap(int(72-3)), // 72 default width, (-3 for space for line numbers)
+		glamour.WithBaseURL(g.FileURL(fileName)),
+	)
+	if err != nil {
+		return "", err
+	}
+
+	rendered, err := r.Render(raw)
+	if err != nil {
+		return "", err
+	}
+
+	// custom formatting changes
+
+	var content string
+	lines := strings.Split(string(rendered), "\n")
+
+	for i, l := range lines {
+		// remove first and last two lines (which are blank)
+		if i == 0 || i >= len(lines)-2 {
+			continue
+		}
+
+		// add line numbers (and left pad them)
+		content += fmt.Sprintf("%2v.", i) + l
+
+		// add new lines where needed
+		if i+1 < len(lines) {
+			content += "\n"
+		}
+	}
+
+	// change escaped \- to just - (for the signature at the end of the JDs)
+	content = strings.ReplaceAll(content, `\-`, "-")
+
+	cachedGist.Rendered = content
+
+	g.cachedGists[fileName] = cachedGist
+
+	return cachedGist.Rendered, nil
+}
+
 type Session struct {
 	Width    int
 	Height   int
@@ -46,6 +201,13 @@ func main() {
 	} else {
 		sshPort = ":" + envSshPort
 	}
+
+	files := [][]string{
+		[]string{"README.md", "https://gist.github.com/zachlatta/3a5d780da6a3c964677a4f1c4c751f5c"},
+		[]string{"game_designer.md", "https://gist.github.com/zachlatta/a00579cabbd94c98561377eaf369e9a6"},
+	}
+
+	gists := NewGistService(files)
 
 	config := &ssh.ServerConfig{
 		NoClientAuth: true,
@@ -147,10 +309,6 @@ func main() {
 					}
 
 					for {
-						files := [][]string{
-							[]string{"README.md", "https://gist.github.com/zachlatta/3a5d780da6a3c964677a4f1c4c751f5c"},
-							[]string{"game_designer.md", "https://gist.github.com/zachlatta/a00579cabbd94c98561377eaf369e9a6"},
-						}
 
 						cmds := map[string]func([]string){
 							"help": func(args []string) {
@@ -177,13 +335,9 @@ list.
 								fmt.Fprintln(term, "\npsst! try running 'ls' to get started")
 							},
 							"ls": func(args []string) {
-								fileNames := make([]string, len(files))
+								files := gists.FileNames()
 
-								for i, f := range files {
-									fileNames[i] = f[0]
-								}
-
-								fmt.Fprintln(term, strings.Join(fileNames, "\t"))
+								fmt.Fprintln(term, strings.Join(files, "\t"))
 							},
 							"cat": func(args []string) {
 								if len(args) == 0 {
@@ -193,88 +347,32 @@ list.
 
 								argFile := args[0]
 
-								var file []string
-
-								for _, f := range files {
-									if argFile == f[0] {
-										file = f
-									}
-								}
-
-								if file == nil {
+								if !gists.FileExists(argFile) {
 									fmt.Fprintln(term, "meow! i can't find the file", argFile)
 									return
 								}
 
 								meowText := "  m e e o o o w !  "
+								typewrite(term, 100*time.Millisecond, meowText)
 
-								for _, c := range strings.Split(meowText, "") {
-									fmt.Fprint(term, c)
-									time.Sleep(100 * time.Millisecond)
+								content, err := gists.FileRendered(argFile)
+								if err != nil {
+									fmt.Fprintln(term, "meow... i am having trouble accessing my brain (file retrieval error)")
+									return
 								}
 
-								time.Sleep(1500 * time.Millisecond)
-
+								// clear the meow
 								fmt.Fprint(term, "\r"+strings.Repeat(" ", len(meowText))+"\r")
-
-								rawGistURL := file[1] + "/raw"
-
-								resp, err := http.Get(rawGistURL)
-								if err != nil {
-									fmt.Fprintln(term, "gosh, i'm really sorry but my wires seem to be crossed. try that again?")
-									return
-								}
-								defer resp.Body.Close()
-								body, err := ioutil.ReadAll(resp.Body)
-								if err != nil {
-									fmt.Fprintln(term, "gosh, i'm really sorry but my wires seem to be shorting. try that again?")
-									return
-								}
-
-								r, err := glamour.NewTermRenderer(
-									glamour.WithEnvironmentConfig(),
-									glamour.WithWordWrap(int(session.Width-3)), // (-3 for space for line numbers)
-									glamour.WithBaseURL(file[1]),
-								)
-								if err != nil {
-									fmt.Fprintln(term, "something bad happened with my glasses, sorry")
-								}
-
-								rendered, err := r.RenderBytes(body)
-								if err != nil {
-									fmt.Fprintln(term, "i tried to make it all pretty for you, but i'm having trouble!")
-									return
-								}
-
-								var content string
-								lines := strings.Split(string(rendered), "\n")
-
-								for i, l := range lines {
-									// remove first and last two lines (which are blank)
-									if i == 0 || i >= len(lines)-2 {
-										continue
-									}
-
-									content += fmt.Sprintf("%2v.", i) + l
-
-									// add new lines where needed
-									if i+1 < len(lines) {
-										content += "\n"
-									}
-								}
-
-								// Change escaped \- to just - (for the signature at the end of the JDs)
-								content = strings.ReplaceAll(content, `\-`, "-")
 
 								contentLines := strings.Split(content, "\n")
 
 								linesToShow := 14
-								secondsToWait := 15
+								secondsToWait := 3
 
 								if len(contentLines) <= linesToShow {
 									fmt.Fprint(term, content)
 
-									fmt.Fprintln(term, "\neasier to read this file online? "+file[1]+" ~(˘▾˘~)")
+									fmt.Fprintln(term, "\neasier to read this file online? "+gists.FileURL(argFile)+" ~(˘▾˘~)")
 									return
 								}
 
@@ -291,7 +389,7 @@ list.
 								}
 
 								fmt.Fprint(term, "\r"+strings.Join(contentLines[linesToShow:], "\n"))
-								fmt.Fprintln(term, "\neasier to read this file online? "+file[1]+" ~(˘▾˘~)")
+								fmt.Fprintln(term, "\neasier to read this file online? "+gists.FileURL(argFile)+" ~(˘▾˘~)")
 							},
 							"exit": func(args []string) {
 								goodbye := []string{

@@ -16,3 +16,5 @@ Todo before launching:
 - Magic
     - [ ] More magic in intro - colors? emoji? give it a lot of character
     - [ ] Hide some sort of easter egg? Dancing Orpheus
+- Cleanup
+    - [ ] Remove concept of per-session width / height. Make global.
