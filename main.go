@@ -302,8 +302,45 @@ func main() {
 
 					term := terminal.NewTerminal(channel, `\(•◡•)/ ~> $ `)
 
-					for {
+					term.AutoCompleteCallback = func(line string, pos int, key rune) (newLine string, newPos int, ok bool) {
+						// only autocomplete when they hit tab
+						if key != '\t' {
+							return newLine, newPos, ok
+						}
 
+						lineParts := strings.Split(line, " ")
+
+						// only autocomplete if they're typing a file into cat
+						if lineParts[0] != "cat" {
+							return newLine, newPos, ok
+						}
+
+						var givenFile string
+						if len(lineParts) > 1 {
+							givenFile = lineParts[1]
+						}
+
+						files := gists.FileNames()
+						fileMatches := []string{}
+
+						for _, fileName := range files {
+							if strings.HasPrefix(fileName, givenFile) {
+								fileMatches = append(fileMatches, fileName)
+							}
+						}
+
+						if len(fileMatches) > 1 {
+							fmt.Fprintln(term, strings.Join(fileMatches, "\t")+"\n")
+						} else if len(fileMatches) == 1 {
+							newLine = strings.Join([]string{"cat", fileMatches[0]}, " ")
+							newPos = len(newLine)
+							ok = true
+						}
+
+						return newLine, newPos, ok
+					}
+
+					for {
 						cmds := map[string]func([]string){
 							"help": func(args []string) {
 								fmt.Fprintln(term, `HACK CLUB JOBS TERMINAL, version 1.0.0-release (x86_64).

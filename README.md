@@ -4,8 +4,8 @@ Todo before launching:
 
 - Basics
     - [X] `exit` command
+    - [X] Tab completion
     - [ ] Better paging (can we get input midway through a command?)
-    - [ ] Tab completion
     - [ ] Write clever README
 - GitHub Gists
     - [X] Fix paren in links
