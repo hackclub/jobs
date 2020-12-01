@@ -10,7 +10,7 @@ Todo before launching:
 - GitHub Gists
     - [X] Fix paren in links
     - [X] Double new line before gist links
-    - [ ] Cache loading of the GitHub gists
+    - [X] Cache loading of the GitHub gists
 - Markdown formatting
     - [ ] Remove mailto link if possible
 - Magic
