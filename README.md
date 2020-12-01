@@ -7,9 +7,9 @@ Todo before launching:
     - [X] Tab completion
     - [X] Better paging (can we get input midway through a command?)
     - [X] Write clever README
-    - [ ] Periodically print currently connected users
-    - [ ] Print commands users are running (maybe IP locations too?)
-    - [ ] Print when users connect & disconnect
+    - [ ] ~Periodically print currently connected users~
+    - [X] Print commands users are running (maybe IP locations too?)
+    - [ ] ~Print when users connect & disconnect~
 - GitHub Gists
     - [X] Fix paren in links
     - [X] Double new line before gist links

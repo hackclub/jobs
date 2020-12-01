@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"os"
@@ -472,6 +473,8 @@ list.
 						if err != nil {
 							break
 						}
+
+						log.Println(nConn.RemoteAddr(), "ran command:", line)
 
 						trimmedInput := strings.TrimSpace(line)
 
