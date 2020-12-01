@@ -148,7 +148,7 @@ These shell commands are defined internally. Type `+"`help`"+` to see this list.
 
  ls		list contents of current directory
  cat [file]	display contents of current file
- 
+ exit	exits the terminal
 psst! try running 'ls' to get started`)
 							},
 							"ls": func(args []string) {
@@ -267,6 +267,10 @@ psst! try running 'ls' to get started`)
 
 								fmt.Fprint(term, "\r"+strings.Join(contentLines[linesToShow:], "\n"))
 								fmt.Fprint(term, "\n\n(easier to read this file online? "+file[1]+")")
+							},
+							"exit" : func(args[] string) {
+								fmt.Fprintln(term, "meow! see yoou later!")
+								channel.Close()
 							},
 						}
 

@@ -2,6 +2,6 @@
 
 Todo before launching:
 
-- [ ] `exit` command
+- [X] `exit` command
 - [ ] Better paging (can we get input midway through a command?)
 - [ ] Tab completion
