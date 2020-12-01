@@ -5,10 +5,11 @@ Todo before launching:
 - Basics
     - [X] `exit` command
     - [X] Tab completion
-    - [ ] Better paging (can we get input midway through a command?)
+    - [X] Better paging (can we get input midway through a command?)
     - [ ] Write clever README
     - [ ] Periodically print currently connected users
     - [ ] Print commands users are running (maybe IP locations too?)
+    - [ ] Print when users connect & disconnect
 - GitHub Gists
     - [X] Fix paren in links
     - [X] Double new line before gist links

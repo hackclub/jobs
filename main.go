@@ -12,6 +12,7 @@ import (
 	"text/tabwriter"
 	"time"
 
+	"github.com/ahmetb/go-cursor"
 	"github.com/charmbracelet/glamour"
 	"golang.org/x/crypto/ssh"
 	terminal "golang.org/x/term"
@@ -398,29 +399,60 @@ list.
 								contentLines := strings.Split(content, "\n")
 
 								linesToShow := 14
-								secondsToWait := 3
 
+								exitMsg := "easier to read this file online? " + gists.FileURL(argFile) + " ~(˘▾˘~)"
+
+								// if we don't need to page, print and exit
 								if len(contentLines) <= linesToShow {
-									fmt.Fprint(term, content)
-
-									fmt.Fprintln(term, "\neasier to read this file online? "+gists.FileURL(argFile)+" ~(˘▾˘~)")
+									fmt.Fprintln(term, content)
+									fmt.Fprintln(term, exitMsg)
 									return
 								}
 
-								fmt.Fprintln(term, strings.Join(contentLines[:linesToShow], "\n"))
+								// page!
+								input := make(chan string, 1)
+								finishedPrinting := false
 
-								fmt.Fprint(term, "~ printing more in "+fmt.Sprint(secondsToWait)+"... ~")
+								go func() {
+									fmt.Println("ATTEMPTING TO PAGE")
+									totalLines := len(contentLines)
+									currentLine := 0
 
-								for secondsToWait != 0 {
-									time.Sleep(1 * time.Second)
+									// print the first n lines
+									fmt.Fprintln(term, strings.Join(contentLines[currentLine:linesToShow], "\n"))
 
-									secondsToWait--
+									currentLine += linesToShow
 
-									fmt.Fprint(term, "\r~ printing more in "+fmt.Sprint(secondsToWait)+"... ~ ")
+									for range input {
+										nextCurrentLine := currentLine + linesToShow
+										if nextCurrentLine > totalLines {
+											nextCurrentLine = totalLines
+										}
+
+										fmt.Fprint(term, cursor.MoveUp(1))
+										fmt.Fprintln(term, strings.Join(contentLines[currentLine:nextCurrentLine], "\n"))
+
+										currentLine = nextCurrentLine
+
+										if currentLine >= totalLines {
+											finishedPrinting = true
+											break
+										}
+									}
+								}()
+
+								for !finishedPrinting {
+									line, err := term.ReadPassword("     ~(press enter to print more...)~")
+									if err != nil {
+										break
+									}
+
+									input <- line
 								}
 
-								fmt.Fprint(term, "\r"+strings.Join(contentLines[linesToShow:], "\n"))
-								fmt.Fprintln(term, "\neasier to read this file online? "+gists.FileURL(argFile)+" ~(˘▾˘~)")
+								fmt.Fprint(term, cursor.MoveUp(1))
+
+								fmt.Fprintln(term, exitMsg)
 							},
 							"exit": func(args []string) {
 								goodbye := []string{
