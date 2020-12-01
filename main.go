@@ -459,7 +459,6 @@ list.
 								goodbye := []string{
 									"JOBS TERMINAL OUT. SEE YOU LATER!\r\n",
 									"\nCODE AT https://github.com/hackclub/jobs\r\n",
-									"\n\r(psst. did you find the easter egg?)\r\n",
 									"\n(~˘▾˘)~\n\n",
 								}
 
