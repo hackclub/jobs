@@ -21,8 +21,9 @@ import (
 
 // optimize for terminals with 72 char width
 //
-// i haven't figured out how to get the terminal width from the ssh session, so
-// for the sake of time i'm hardcoding it.
+// i haven't figured out how to get the terminal width from the ssh session
+//
+// for the sake of time, i'm hardcoding it.
 const globalTerminalWidth = 72
 
 func typewrite(w io.Writer, speed time.Duration, content string) {
@@ -223,9 +224,14 @@ func main() {
 		NoClientAuth: true,
 	}
 
+	// create /tmp if it doesn't exist
+	if _, err := os.Stat("tmp/"); os.IsNotExist(err) {
+		os.Mkdir("tmp/", os.ModeDir)
+	}
+
 	privateBytes, err := ioutil.ReadFile("tmp/id_rsa")
 	if err != nil {
-		panic("Failed to open private key from disk")
+		panic("Failed to open private key from disk. Try running `ssh-keygen` in tmp/ to create one.")
 	}
 
 	private, err := ssh.ParsePrivateKey(privateBytes)
@@ -239,6 +245,8 @@ func main() {
 	if err != nil {
 		panic("failed to listen for connection")
 	}
+
+	fmt.Println("SSH server running at 0.0.0.0" + sshPort)
 
 	for {
 		nConn, err := listener.Accept()
