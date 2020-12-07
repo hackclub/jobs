@@ -516,7 +516,7 @@ list.
 							fmt.Fprintln(term, "")
 							cmd(inputArgs)
 							fmt.Fprintln(term, "")
-						} else {
+						} else if inputCmd != "" {
 							fmt.Fprintln(term, "")
 							fmt.Fprintln(term, inputCmd, "is not a known command.")
 							fmt.Fprintln(term, "")
