@@ -386,6 +386,8 @@ list.
 							"ls": func(args []string) {
 								files := gists.FileNames()
 
+								typewrite(term, 25*time.Millisecond, "you dust off the shelves and find the following files laying about...\n\r\n")
+
 								fmt.Fprintln(term, strings.Join(files, "\t"))
 							},
 							"cat": func(args []string) {
