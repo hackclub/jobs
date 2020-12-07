@@ -386,7 +386,7 @@ list.
 							"ls": func(args []string) {
 								files := gists.FileNames()
 
-								typewrite(term, 25*time.Millisecond, "you dust off the shelves and find the following files laying about...\n\r\n")
+								fmt.Fprintln(term, "you dust off the shelves and find the following files laying about...\n\r")
 
 								fmt.Fprintln(term, strings.Join(files, "\t"))
 							},
@@ -486,6 +486,15 @@ list.
 								fmt.Fprint(term, cursor.MoveUp(1))
 
 								fmt.Fprintln(term, exitMsg)
+							},
+							"pwd": func(args []string) {
+								typewrite(term, 75*time.Millisecond, "you look up, you look down, you look all around. you are completely and utterly lost.\n\r")
+							},
+							"cd": func(args []string) {
+								typewrite(term, 75*time.Millisecond, "what even IS a directory? this is the HACK CLUB JOBS TERMINAL. there are only jobs here.\r\n")
+							},
+							"whoami": func(args []string) {
+								typewrite(term, 75*time.Millisecond, "who ARE you? why are we here? what IS this all about?\r\n")
 							},
 							"exit": func(args []string) {
 								goodbye := []string{
