@@ -215,7 +215,9 @@ func main() {
 
 	files := [][]string{
 		[]string{"README.md", "https://gist.github.com/zachlatta/3a5d780da6a3c964677a4f1c4c751f5c"},
-		[]string{"game_designer.md", "https://gist.github.com/zachlatta/a00579cabbd94c98561377eaf369e9a6"},
+		[]string{"creative_director.md", "https://gist.github.com/zachlatta/ab8995c0b1518e419d89324f34c32e35"},
+		[]string{"bank_ops_lead.md", "https://gist.github.com/zachlatta/c1796e5883ad2a1e6dff33797a91d52f"},
+		[]string{"hired_game_designer.md", "https://gist.github.com/zachlatta/a00579cabbd94c98561377eaf369e9a6"},
 	}
 
 	gists := NewGistService(files)
