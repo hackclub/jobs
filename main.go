@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"text/tabwriter"
@@ -90,8 +91,56 @@ func (g GistService) FileExists(fileName string) bool {
 	return g.FileURL(fileName) != ""
 }
 
+type GistServiceFileType int
+
+const (
+	GistServiceFileTypeGist GistServiceFileType = iota
+	GistServiceFileTypeRepoFile
+)
+
+func (g GistService) urlType(fileURL string) (GistServiceFileType, error) {
+	u, err := url.Parse(fileURL)
+	if err != nil {
+		return -1, err
+	}
+
+	if strings.HasPrefix(u.Host, "gist") {
+		return GistServiceFileTypeGist, nil
+	}
+
+	if strings.Contains(u.Path, "/blob/") {
+		return GistServiceFileTypeRepoFile, nil
+	}
+
+	return -1, errors.New("GistServiceFileType of fileURL not recognized")
+}
+
 func (g GistService) fetchRemoteGistContents(gistURL string) (string, error) {
-	rawGistURL := gistURL + "/raw"
+	fileType, err := g.urlType(gistURL)
+	if err != nil {
+		return "", err
+	}
+
+	var rawGistURL string
+	switch fileType {
+	case GistServiceFileTypeGist:
+		rawGistURL = gistURL + "/raw"
+	case GistServiceFileTypeRepoFile:
+		u, err := url.Parse(gistURL)
+		if err != nil {
+			return "", err
+		}
+
+		u.Path = strings.Replace(u.Path, "blob/", "", 1)
+
+		u.Host = "raw.githubusercontent.com"
+
+		rawGistURL = u.String()
+	default:
+		return "", errors.New("GistServiceFileType case not handled")
+	}
+
+	fmt.Println(rawGistURL)
 
 	resp, err := http.Get(rawGistURL)
 	if err != nil {
