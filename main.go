@@ -584,7 +584,9 @@ list.
 							fmt.Fprintln(term, "")
 						} else if inputCmd != "" {
 							fmt.Fprintln(term, "")
-							fmt.Fprintln(term, inputCmd, "is not a known command.")
+							fmt.Fprintln(term, inputCmd, `is not a known command.
+
+p.s. this is a custom SSH server, with a custom shell, written in Go. open source at https://github.com/hackclub/jobs!`)
 							fmt.Fprintln(term, "")
 						}
 					}
