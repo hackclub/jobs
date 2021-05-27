@@ -478,10 +478,6 @@ list.
 
 								var exitMsg string
 
-								if argFile != "README.md" {
-									exitMsg += "P.S. If you apply via this SSH portal, please mention that in your email to us.\r\n\n"
-								}
-
 								if darkOrLight == "" || darkOrLight == "dark" {
 									exitMsg += " ~ psst. you can switch to light mode with `cat [file] light` ~"
 								} else {
