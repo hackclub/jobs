@@ -264,6 +264,7 @@ func main() {
 
 	files := [][]string{
 		[]string{"README.md", "https://gist.github.com/zachlatta/3a5d780da6a3c964677a4f1c4c751f5c"},
+		[]string{"philanthropy_position.md", "https://github.com/hackclub/v3/blob/main/components/jobs/philanthropy-position/jd.mdx"},
 		[]string{"executive_assistant.md", "https://github.com/hackclub/v3/blob/main/components/jobs/executive-assistant/jd.mdx"},
                 []string{"hired_clubs_lead.md", "https://gist.github.com/zachlatta/ef83904bfcfddc04bc823355e5bcd280"},
                 []string{"hired_bank_ops_associate.md", "https://github.com/hackclub/v3/blob/main/components/jobs/bank-ops-associate/jd.mdx"},
