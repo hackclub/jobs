@@ -4,6 +4,8 @@ Hack Club is where 16,000+ teenage programmers talk, build, and have fun togethe
 
 We're looking for someone **fun, creative, and technical** to excite and grow the community.
 
+[Visit this job on our website](https://hackclub.com/jobs/events-designer/) for more information.
+
 ### Couple things about you
 
 - You're passionate about building technical projects and find tinkering fun
@@ -29,7 +31,5 @@ We have COVID protocols and take them seriously. Relocation assistance available
 This role pays between $60K - $100K, depending on your experience— and we know that's probably less than you'd make elsewhere. We offer healthcare and 4 weeks paid vacation.
 
 ### How to apply
-
-[Visit this job on our website](https://hackclub.com/jobs/events-designer/) for more information.
 
 Email <jobs@hackclub.com> with "golden" in the subject line, 3 bullet points demonstrating why you would be exceptional for the role, and your resume.

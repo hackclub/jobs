@@ -4,6 +4,8 @@ Hack Club is where 16,000+ teenage programmers talk, build, and have fun togethe
 
 The leadership is looking for an executive assistant to play a vital role in supporting the leadership in administrative management of day-to-day operations. This person must be a creative, entrepreneurial self-starter, highly-energetic, organized and detail oriented, with a positive attitude.
 
+[Visit this job on our website](https://hackclub.com/jobs/executive-assistant/) for more information.
+
 ### Qualifications
 
 - Bachelor's degree
@@ -36,7 +38,5 @@ Additional requirements:
 - Organize and set up company events including but not limited to: employee events and holiday party
 
 ### How to apply
-
-[Visit this job on our website](https://hackclub.com/jobs/executive-assistant/) for more information.
 
 Email <jobs@hackclub.com> with "overflow" in the subject line, 3 bullet points demonstrating why you would be exceptional for the role, and your resume. Salary commensurate with experience.

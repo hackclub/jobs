@@ -6,6 +6,8 @@ We are looking for either a lead or a deputy to focus on philanthropy.
 
 This person should be a strong and persuasive writer and be able to create detailed, powerful emails that communicate Hack Club and its accomplishments. They should be able to craft proposals and work with the design team to communicate Hack Club's message. The right candidate could build out our strong existing network inside the tech industry, while also diversifying our funding with foundations.
 
+[Visit this job on our website](https://hackclub.com/jobs/philanthropy-position/) for more information.
+
 ### Qualifications
 
 We are open to 2 types of candidates:
@@ -33,7 +35,5 @@ In addition to the above:
 - Engage in personal networking and leverage the capacity of other team members, and the board to make contacts and engage, secure, and retain donors.
 
 ### How to apply
-
-[Visit this job on our website](https://hackclub.com/jobs/philanthropy-position/) for more information.
 
 Email <jobs@hackclub.com> with "kesef" in the subject line, 3 bullet points demonstrating why you would be exceptional for the role, and your resume. Salary commensurate with experience.
