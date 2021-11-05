@@ -266,8 +266,8 @@ func main() {
 		[]string{"README.md", "https://github.com/hackclub/jobs/blob/main/directory/README.md"},
 
     	[]string{"events_designer.md", "https://github.com/hackclub/jobs/blob/main/directory/events_designer.md"},
-		[]string{"philanthropy_position.md", "https://github.com/hackclub/v3/blob/main/components/jobs/philanthropy-position/jd.mdx"},
-		[]string{"executive_assistant.md", "https://github.com/hackclub/v3/blob/main/components/jobs/executive-assistant/jd.mdx"},
+		[]string{"philanthropy_position.md", "https://github.com/hackclub/jobs/blob/main/directory/philanthropy_position.md"},
+		[]string{"executive_assistant.md", "https://github.com/hackclub/jobs/blob/main/directory/executive_assistant.md"},
 
 		[]string{"hired_clubs_lead.md", "https://gist.github.com/zachlatta/ef83904bfcfddc04bc823355e5bcd280"},
 		[]string{"hired_bank_ops_associate.md", "https://github.com/hackclub/v3/blob/main/components/jobs/bank-ops-associate/jd.mdx"},
