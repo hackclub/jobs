@@ -1,6 +1,4 @@
-# Events Designer @ Hack Club
-
-Hack Club is where 16,000+ teenage programmers talk, build, and have fun together. We do crazy things like hosting AMAs with Elon Musk and running the world's longest hackathon on a train.
+Hack Club is where 16,000+ teenage programmers talk, build, and have fun together. We do crazy things like [hosting AMAs](https://hackclub.com/amas/) with Elon Musk and running [the world's longest hackathon on a train](https://www.youtube.com/watch?v=2BID8_pGuqA).
 
 We're looking for someone **fun, creative, and technical** to excite and grow the community.
 
@@ -15,8 +13,8 @@ We're looking for someone **fun, creative, and technical** to excite and grow th
 ### Projects you'll lead on
 
 - Produce and project manage the big, crazy things we do every few months
-- Support Hack Clubbers in creating and executing their awesome ideas
-- Revive Hack Night, our weekly casual technical hangout with the community
+- Support Hack Clubbers in creating and executing [their awesome ideas](https://scrapbook.hackclub.com/)
+- Revive [Hack Night](https://hackclub.com/night/), our weekly casual technical hangout with the community
 - Lead on organizing AMAs and conversations with famous tech leaders
 - Game design events at Hack Club to better help students form meaningful relationships
 
@@ -33,3 +31,5 @@ This role pays between $60K - $100K, depending on your experience— and we know
 ### How to apply
 
 Email <jobs@hackclub.com> with "golden" in the subject line, 3 bullet points demonstrating why you would be exceptional for the role, and your resume.
+
+\- Zach Latta, Executive Director
