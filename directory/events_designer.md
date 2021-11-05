@@ -1,3 +1,5 @@
+# Events Designer @ Hack Club
+
 Hack Club is where 16,000+ teenage programmers talk, build, and have fun together. We do crazy things like [hosting AMAs](https://hackclub.com/amas/) with Elon Musk and running [the world's longest hackathon on a train](https://www.youtube.com/watch?v=2BID8_pGuqA).
 
 We're looking for someone **fun, creative, and technical** to excite and grow the community.
