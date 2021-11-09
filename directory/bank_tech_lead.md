@@ -42,3 +42,5 @@ Competitive salary, commensurate with experience. We offer healthcare and 4 week
 ### How to apply
 
 Email <jobs@hackclub.com> with "the spice must flow'' in the subject line, 3 bullet points demonstrating why you would be exceptional for the role, and your resume / GitHub / GitLab / sourcehut.
+
+\- Zach Latta, Executive Director
