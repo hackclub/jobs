@@ -266,6 +266,7 @@ func main() {
 		[]string{"README.md", "https://github.com/hackclub/jobs/blob/main/directory/README.md"},
 
     	[]string{"events_designer.md", "https://github.com/hackclub/jobs/blob/main/directory/events_designer.md"},
+    	[]string{"bank_tech_lead.md", "https://github.com/hackclub/jobs/blob/main/directory/bank_tech_lead.md"},
 		[]string{"philanthropy_position.md", "https://github.com/hackclub/jobs/blob/main/directory/philanthropy_position.md"},
 		[]string{"executive_assistant.md", "https://github.com/hackclub/jobs/blob/main/directory/executive_assistant.md"},
 
