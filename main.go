@@ -263,17 +263,17 @@ func main() {
 	}
 
 	files := [][]string{
-		[]string{"README.md", "https://github.com/hackclub/jobs/blob/main/directory/README.md"},
+		{"README.md", "https://github.com/hackclub/jobs/blob/main/directory/README.md"},
 
-    	[]string{"events_designer.md", "https://github.com/hackclub/jobs/blob/main/directory/events_designer.md"},
-    	[]string{"bank_tech_lead.md", "https://github.com/hackclub/jobs/blob/main/directory/bank_tech_lead.md"},
-		[]string{"philanthropy_position.md", "https://github.com/hackclub/jobs/blob/main/directory/philanthropy_position.md"},
-		[]string{"executive_assistant.md", "https://github.com/hackclub/jobs/blob/main/directory/executive_assistant.md"},
+    	{"events_designer.md", "https://github.com/hackclub/jobs/blob/main/directory/events_designer.md"},
+    	{"bank_tech_lead.md", "https://github.com/hackclub/jobs/blob/main/directory/bank_tech_lead.md"},
+		{"philanthropy_position.md", "https://github.com/hackclub/jobs/blob/main/directory/philanthropy_position.md"},
+		{"executive_assistant.md", "https://github.com/hackclub/jobs/blob/main/directory/executive_assistant.md"},
 
-		[]string{"hired_clubs_lead.md", "https://gist.github.com/zachlatta/ef83904bfcfddc04bc823355e5bcd280"},
-		[]string{"hired_bank_ops_associate.md", "https://github.com/hackclub/v3/blob/main/components/jobs/bank-ops-associate/jd.mdx"},
-		[]string{"hired_bank_ops_lead.md", "https://github.com/hackclub/v3/blob/main/components/jobs/bank-ops-lead/jd.mdx"},
-		[]string{"hired_game_designer.md", "https://gist.github.com/zachlatta/a00579cabbd94c98561377eaf369e9a6"},
+		{"hired_clubs_lead.md", "https://gist.github.com/zachlatta/ef83904bfcfddc04bc823355e5bcd280"},
+		{"hired_bank_ops_associate.md", "https://github.com/hackclub/v3/blob/main/components/jobs/bank-ops-associate/jd.mdx"},
+		{"hired_bank_ops_lead.md", "https://github.com/hackclub/v3/blob/main/components/jobs/bank-ops-lead/jd.mdx"},
+		{"hired_game_designer.md", "https://gist.github.com/zachlatta/a00579cabbd94c98561377eaf369e9a6"},
 	}
 
 	gists := NewGistService(files)
@@ -348,8 +348,8 @@ func main() {
 					defer channel.Close()
 
 					connecting := []string{
-						"...connecting...\r",
-						"...c..o..n..n..e..c..t..i..n..g...\r",
+						"\x1b[33m...connecting...\x1b[0m\r",
+						"\x1b[35m...c..o..n..n..e..c..t..i..n..g...\x1b[0m\r",
 					}
 
 					connectingSpeed := 100
@@ -364,19 +364,19 @@ func main() {
 					}
 
 					connected := []string{
-						"\r..........................................................\n\r",
+						"\r\x1b[2m..........................................................\x1b[0m\n\r",
 						"\n\r",
-						"    (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ ~*~ CONNECTED! ~*~ ✧ﾟ･: *ヽ(◕ヮ◕ヽ)\n\r",
+						"    \x1b[35m(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ ~*~ CONNECTED! ~*~ ✧ﾟ･: *ヽ(◕ヮ◕ヽ)\x1b[0m\n\r",
 						"\n\r",
-						"..........................................................\n\r",
+						"\x1b[2m..........................................................\x1b[0m\n\r",
 						"\n\r",
-						"WELCOME TO THE HACK CLUB JOBS TERMINAL. PLEASE TYPE help TO BEGIN.\n\r",
+						"\x1b[1mWELCOME TO THE HACK CLUB JOBS TERMINAL.\x1b[0m PLEASE TYPE `help` TO BEGIN.\n\r",
 						"\n\r",
 					}
 
 					typewriteLines(channel, 25*time.Millisecond, connected)
 
-					term := terminal.NewTerminal(channel, `\(•◡•)/ ~> $ `)
+					term := terminal.NewTerminal(channel, "\x1b[36m\\(•◡•)/ ~> \x1b[1m$\x1b[0m ")
 
 					term.AutoCompleteCallback = func(line string, pos int, key rune) (newLine string, newPos int, ok bool) {
 						// only autocomplete when they hit tab
@@ -419,7 +419,7 @@ func main() {
 					for {
 						cmds := map[string]func([]string){
 							"help": func(args []string) {
-								fmt.Fprintln(term, `HACK CLUB JOBS TERMINAL, version 1.0.0-release (x86_64).
+								fmt.Fprintln(term, "\x1b[1mHACK CLUB JOBS TERMINAL\x1b[0m \x1b[2mversion 1.0.1-release (x86_64)\x1b[0m"+`
 These shell commands are defined internally. Type `+"`help`"+` to see this
 list.
 `)
@@ -428,9 +428,10 @@ list.
 								helpWriter := tabwriter.NewWriter(term, 8, 8, 0, '\t', 0)
 
 								commands := [][]string{
-									[]string{"ls", "list contents of current directory"},
-									[]string{"cat [file] [dark or light]", "display contents of current file"},
-									[]string{"exit", "exit the terminal"},
+									{"ls", "list contents of current directory"},
+									{"cat [file] [dark or light]", "display contents of current file"},
+									{"clear", "summon the  v o i d"},
+									{"exit", "exit the terminal"},
 								}
 
 								for _, command := range commands {
@@ -438,14 +439,24 @@ list.
 								}
 								helpWriter.Flush()
 
-								fmt.Fprintln(term, "\npsst! try running 'ls' to get started")
+								fmt.Fprintln(term, "\npsst! try running `ls` to get started")
 							},
 							"ls": func(args []string) {
 								files := gists.FileNames()
+								for i, file := range files {
+									if file == "README.md" {
+										files[i] = "\x1b[1m" + file + "\x1b[0m"
+									} else if strings.HasPrefix(file, "hired_") {
+										files[i] = "\x1b[2m" + file + "\x1b[0m"
+									}
+								}
 
-								fmt.Fprintln(term, "you dust off the shelves and find the following files laying about...\n\r")
+								fmt.Fprintln(term, "\x1b[1;2myou dust off the shelves and find the following files laying about...\x1b[0m\n\r")
 
-								fmt.Fprintln(term, strings.Join(files, "\t"))
+								fmt.Fprintln(term, strings.Join(files, "\n"))
+							},
+							"clear": func(args []string) {
+								fmt.Fprint(term, "\x1b[H\x1b[2J")
 							},
 							"cat": func(args []string) {
 								if len(args) == 0 {
@@ -555,10 +566,10 @@ list.
 							},
 							"exit": func(args []string) {
 								goodbye := []string{
-									"JOBS TERMINAL OUT. SEE YOU LATER!\r\n",
-									"\nCODE AT https://github.com/hackclub/jobs\r\n",
-									"\nWANT TO TRY SOMETHING FUN? RUN $ ssh sshtron.zachlatta.com\r\n",
-									"\n(~˘▾˘)~\n\n",
+									"\x1b[1;34mJOBS TERMINAL OUT. SEE YOU LATER!\x1b[0m\r\n",
+									"CODE AT https://github.com/hackclub/jobs\r\n",
+									"WANT TO TRY SOMETHING FUN? RUN $ ssh sshtron.zachlatta.com\r\n",
+									"(~˘▾˘)~\n\n",
 								}
 
 								typewriteLines(term, 25*time.Millisecond, goodbye)
