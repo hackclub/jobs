@@ -1,6 +1,6 @@
 # Executive Assistant @ Hack Club
 
-Hack Club is where 16,000+ teenage programmers talk, build, and have fun together. We do crazy things like hosting AMAs with Elon Musk and running the world's longest hackathon on a train.
+Hack Club is where 16,000+ teenage programmers talk, build, and have fun together. We do crazy things like [hosting AMAs](https://hackclub.com/amas/) with Elon Musk and running [the world's longest hackathon on a train](https://www.youtube.com/watch?v=2BID8_pGuqA).
 
 The leadership is looking for an executive assistant to play a vital role in supporting the leadership in administrative management of day-to-day operations. This person must be a creative, entrepreneurial self-starter, highly-energetic, organized and detail oriented, with a positive attitude.
 
