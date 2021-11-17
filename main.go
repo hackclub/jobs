@@ -265,8 +265,8 @@ func main() {
 	files := [][]string{
 		{"README.md", "https://github.com/hackclub/jobs/blob/main/directory/README.md"},
 
+    	{"tech_lead.md", "https://github.com/hackclub/jobs/blob/main/directory/tech_lead.md"},
     	{"events_designer.md", "https://github.com/hackclub/jobs/blob/main/directory/events_designer.md"},
-    	{"bank_tech_lead.md", "https://github.com/hackclub/jobs/blob/main/directory/bank_tech_lead.md"},
 		{"philanthropy_position.md", "https://github.com/hackclub/jobs/blob/main/directory/philanthropy_position.md"},
 		{"executive_assistant.md", "https://github.com/hackclub/jobs/blob/main/directory/executive_assistant.md"},
 
