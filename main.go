@@ -266,6 +266,7 @@ func main() {
 		{"README.md", "https://github.com/hackclub/jobs/blob/main/directory/README.md"},
 
     	{"tech_lead.md", "https://github.com/hackclub/jobs/blob/main/directory/tech_lead.md"},
+		{"education-engineer.md", "https://github.com/hackclub/jobs/blob/main/directory/education-engineer.md"},
 		{"communications-manager.md", "https://github.com/hackclub/jobs/blob/main/directory/communications-manager.md"},
     	{"events_designer.md", "https://github.com/hackclub/jobs/blob/main/directory/events_designer.md"},
 		{"philanthropy_position.md", "https://github.com/hackclub/jobs/blob/main/directory/philanthropy_position.md"},
