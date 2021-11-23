@@ -19,7 +19,7 @@ The ideal candidate will be a creative communicator, up-to-date on presentation,
 - Create informative and interesting newsletters for Hack Clubbers
 - Do some outreach to mainstream media, especially during breaking news
 
-### Basic Qualifications
+### Basic qualifications
 
 - Exceptional communication abilities, including writing, speaking, and active listening
 - Excellent organizational skills and attention to detail
@@ -35,6 +35,6 @@ The ideal candidate will be a creative communicator, up-to-date on presentation,
 
 We have a strong preference for someone in-person in Vermont, but we will consider applications from people who want to work remotely, provided they are willing to travel to our offices. Relocation assistance is available. We have COVID protocols and take them seriously.
 
-### How to Apply
+### How to apply
 
 Email <jobs@hackclub.com> with "papyrus" in the subject line, 3 bullet points demonstrating why you would be exceptional for the role, and your resume.
