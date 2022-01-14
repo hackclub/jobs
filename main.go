@@ -294,11 +294,11 @@ func main() {
 	if err != nil {
 		panic("Failed to open private key from disk. Try running `ssh-keygen -t ed25519` in tmp/ to create one.")
 	}
-	private25519, err := ssh.ParsePrivateKey(privateBytes)
+	private25519, err := ssh.ParsePrivateKey(privateBytes25519)
 	if err != nil {
 		panic("Failed to parse ed25519 private key")
 	}
-	config.AddHostKey(private)
+	config.AddHostKey(private25519)
 
 	// add rsa key
 	privateBytesRSA, err := ioutil.ReadFile("tmp/id_rsa")
