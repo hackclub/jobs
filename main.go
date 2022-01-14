@@ -289,9 +289,9 @@ func main() {
 		os.Mkdir("tmp/", os.ModeDir)
 	}
 
-	privateBytes, err := ioutil.ReadFile("tmp/id_rsa")
+	privateBytes, err := ioutil.ReadFile("tmp/id_ed25519")
 	if err != nil {
-		panic("Failed to open private key from disk. Try running `ssh-keygen` in tmp/ to create one.")
+		panic("Failed to open private key from disk. Try running `ssh-keygen -t ed25519` in tmp/ to create one.")
 	}
 
 	private, err := ssh.ParsePrivateKey(privateBytes)
