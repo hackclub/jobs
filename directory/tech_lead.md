@@ -34,10 +34,10 @@ In this role, you will work in an environment where we value teamwork, communica
 
 ### Location
 
-We have an in-person office in Burlington, Vermont where our 8 person team works collaboratively. While we have a strong preference for in-person and can assist with relocation, we're flexible and eager to accommodate for the right candidate. 
+We're flexible and eager to accommodate for the right candidate. While we have a preference for in-person and can assist with relocation, we're open to remote options. We have an in-person office in Burlington, Vermont where our 8 person team works collaboratively.
 
 ### Compensation
 
-Competitive salary, commensurate with experience. We offer healthcare and 4 weeks paid vacation.
+$150k-210k, depending on your experience. We offer healthcare and 4 weeks paid vacation.
 
 \- Zach Latta, Executive Director
