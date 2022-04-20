@@ -13,11 +13,11 @@ We're looking for someone to serve as the top point of contact** for Hack Clubbe
 
 ### Responsibilities include
 
-- Serve as the top point of contact** for Hack Clubbers, receiving messages through Slack, email, and iMessage
-- Process applications** from teen coders and **run onboarding calls** with new Hack Club leaders over Zoom
-- Handle back-office tasks accurately and promptly**
-- Build out and supervise a team of part-time Hack Clubbers** to handle the growing volume of contacts and inquiries
-- Treat teens 13 - 18 years old with total respect and professionalism**
+- Serve as the top point of contact for Hack Clubbers, receiving messages through Slack, email, and iMessage
+- Process applications** from teen coders and run onboarding calls with new Hack Club leaders over Zoom
+- Handle back-office tasks accurately and promptly
+- Build out and supervise a team of part-time Hack Clubbers to handle the growing volume of contacts and inquiries
+- Treat teens 13 - 18 years old with total respect and professionalism
 
 
 ### Basic qualifications
@@ -41,4 +41,4 @@ We have a strong preference for someone in-person in Vermont, but we will consid
 
 ## APPLY HERE: https://hack.af/club-ops-lead-apply
 
-**TO LEARN MORE,** feel free to contact our search partner, Charlene Wallace, at charlene@charlenewallace.com, for a confidential exploratory conversation.
+TO LEARN MORE,feel free to contact our search partner, Charlene Wallace, at charlene@charlenewallace.com, for a confidential exploratory conversation.
