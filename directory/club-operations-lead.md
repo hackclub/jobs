@@ -2,13 +2,10 @@
 
 Hack Club is where 16,000+ teenage programmers talk, build, and have fun together. We do crazy things like [hosting AMAs](https://hackclub.com/amas/) with Elon Musk and running [the world's longest hackathon on a train](https://www.youtube.com/watch?v=2BID8_pGuqA).
 
-We are looking for a person to support technical teens with their customer service and management skills.
-
-In this role, you would be the liaison between teens leading their own after-school Hack Clubs and Hack Club's amazing resources. You'll play a vital role in Hack Club's nonprofit mission to support high school coders in starting coding clubs, hackathons, and building awesome projects.
+We're looking for someone to serve as the top point of contact for Hack Clubbers, receiving messages through Slack, email, and iMessage. This person will serve as the liaison between teens leading their own after-school Hack Clubs and Hack Club's amazing resources, you'll play a vital role in Hack Club's nonprofit mission to support high school coders in starting coding clubs, hackathons, and building awesome projects.
 
 [Visit this job on our website](https://hackclub.com/jobs/club-operations-lead/) for more information.
 
-We're looking for someone to serve as the top point of contact for Hack Clubbers, receiving messages through Slack, email, and iMessage. This person will serve as the liaison between teens leading their own after-school Hack Clubs and Hack Club's amazing resources, you'll play a vital role in Hack Club's nonprofit mission to support high school coders in starting coding clubs, hackathons, and building awesome projects.
 
 ### Responsibilities include
 
