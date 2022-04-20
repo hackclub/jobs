@@ -264,14 +264,18 @@ func main() {
 
 	files := [][]string{
 		{"README.md", "https://github.com/hackclub/jobs/blob/main/directory/README.md"},
-
-    	{"tech_lead.md", "https://github.com/hackclub/jobs/blob/main/directory/tech_lead.md"},
-		
+    		{"tech_lead.md", "https://github.com/hackclub/jobs/blob/main/directory/tech_lead.md"},
 		{"hired_philanthropy_position.md", "https://github.com/hackclub/jobs/blob/main/directory/philanthropy_position.md"},
 		{"hired_education_engineer.md", "https://github.com/hackclub/jobs/blob/main/directory/education_engineer.md"},
 		{"hired_executive_assistant.md", "https://github.com/hackclub/jobs/blob/main/directory/executive_assistant.md"},
 		{"hired_communications_manager.md", "https://github.com/hackclub/jobs/blob/main/directory/communications_manager.md"},
-    	{"hired_events_designer.md", "https://github.com/hackclub/jobs/blob/main/directory/events_designer.md"},
+    		{"hired_events_designer.md", "https://github.com/hackclub/jobs/blob/main/directory/events_designer.md"},
+		{"club-operations-lead.md", "https://github.com/hackclub/jobs/blob/main/directory/club-operations-lead.md"},
+		{"education-engineer.md", "https://github.com/hackclub/jobs/blob/main/directory/education-engineer.md"},
+		{"communications-manager.md", "https://github.com/hackclub/jobs/blob/main/directory/communications-manager.md"},
+    		{"events_designer.md", "https://github.com/hackclub/jobs/blob/main/directory/events_designer.md"},
+		{"philanthropy_position.md", "https://github.com/hackclub/jobs/blob/main/directory/philanthropy_position.md"},
+		{"executive_assistant.md", "https://github.com/hackclub/jobs/blob/main/directory/executive_assistant.md"},
 		{"hired_clubs_lead.md", "https://gist.github.com/zachlatta/ef83904bfcfddc04bc823355e5bcd280"},
 		{"hired_bank_ops_associate.md", "https://github.com/hackclub/v3/blob/main/components/jobs/bank-ops-associate/jd.mdx"},
 		{"hired_bank_ops_lead.md", "https://github.com/hackclub/v3/blob/main/components/jobs/bank-ops-lead/jd.mdx"},
