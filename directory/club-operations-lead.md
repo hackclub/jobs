@@ -38,4 +38,4 @@ We have a strong preference for someone in-person in Vermont, but we will consid
 
 ## Apply Here: https://hack.af/club-ops-lead-apply
 
-TO LEARN MORE,feel free to contact our search partner, Charlene Wallace, at charlene@charlenewallace.com, for a confidential exploratory conversation.
+- Zach Latta, Executive Director
