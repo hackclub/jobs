@@ -6,7 +6,6 @@ We're looking for someone to serve as the top point of contact for Hack Clubbers
 
 [Visit this job on our website](https://hackclub.com/jobs/club-operations-lead/) for more information.
 
-
 ### Responsibilities include
 
 - Serve as the top point of contact for Hack Clubbers, receiving messages through Slack, email, and iMessage
@@ -15,7 +14,7 @@ We're looking for someone to serve as the top point of contact for Hack Clubbers
 - Build out and supervise a team of part-time Hack Clubbers to handle the growing volume of contacts and inquiries
 - Treat teens 13 - 18 years old with total respect and professionalism
 
-### Basic qualifications
+### Couple things about you
 
 - A high-energy doer, warm and friendly, good at making connections
 - An experienced manager, leader, or coordinator---perhaps in hospitality, retail, or a nonprofit
@@ -25,7 +24,7 @@ We're looking for someone to serve as the top point of contact for Hack Clubbers
 - Inspired by computers, technology, and online communities
 - Excited to work 1:1 with teenagers every day
 
-### Required
+### Requirements
 
 - Software savvy: 3+ years of experience with Google Docs or Microsoft Office applications, comfortable in spreadsheets, databases, project management software tools
 - Superior organizational skills
