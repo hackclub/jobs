@@ -14,6 +14,6 @@ I'm the ghost in this machine and I'm thrilled to have you here.
 
 At HQ, we're a small team trying to build what we wish we had in high school. Nearly everything we do is open source at https://github.com/hackclub. Even our finances are 100% open at https://bank.hackclub.com/hq.
 
-Hack Club HQ currently has [8 full-time employees](https://hackclub.com/team/). We'd love for you to join us to become the 9th!
+Hack Club HQ currently has [a small team of full-time employees](https://hackclub.com/team/). We'd love for you to join us!
 
-**A great place to start is our Events Designer role in `events_designer.md`!**
+We aren't hiring any roles right now, but you can check back later in case something pops up!
