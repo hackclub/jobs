@@ -32,45 +32,6 @@ func typewriteLines(w io.Writer, speed time.Duration, lines []string) {
 	}
 }
 
-type gistCache struct {
-	Expiration time.Time
-	Content    string
-	Rendered   string
-}
-
-type GistService struct {
-	files       [][]string
-	cachedGists map[string]gistCache
-}
-
-func NewGistService(files [][]string) GistService {
-	return GistService{
-		files:       files,
-		cachedGists: map[string]gistCache{},
-	}
-}
-
-func (g GistService) FileNames() []string {
-	fileNames := make([]string, g.Count())
-
-	for i, f := range g.files {
-		fileNames[i] = f[0]
-	}
-
-	return fileNames
-}
-
-func (g GistService) Count() int {
-	return len(g.files)
-}
-
-type GistServiceFileType int
-
-const (
-	GistServiceFileTypeGist GistServiceFileType = iota
-	GistServiceFileTypeRepoFile
-)
-
 func main() {
 	var sshPort string
 
@@ -81,11 +42,6 @@ func main() {
 		sshPort = ":" + envSshPort
 	}
 
-	files := [][]string{
-		{"README.md", "https://github.com/hackclub/jobs/blob/main/directory/README.md"},
-	}
-
-	gists := NewGistService(files)
 	polymerClient := polymer.Client{}
 
 	config := &ssh.ServerConfig{
@@ -216,12 +172,22 @@ func main() {
 							givenFile = lineParts[1]
 						}
 
-						files := gists.FileNames()
+						jobs, err := polymerClient.ListJobs()
+						if err != nil {
+							return newLine, newPos, ok
+						}
+
+						files := []string{"README.md"}
+
+						for _, job := range jobs {
+							files = append(files, job.Filename())
+						}
+
 						fileMatches := []string{}
 
-						for _, fileName := range files {
-							if strings.HasPrefix(fileName, givenFile) {
-								fileMatches = append(fileMatches, fileName)
+						for _, file := range files {
+							if strings.HasPrefix(file, givenFile) {
+								fileMatches = append(fileMatches, file)
 							}
 						}
 
