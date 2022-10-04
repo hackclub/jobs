@@ -353,7 +353,7 @@ func main() {
 						"\x1b[35m...c..o..n..n..e..c..t..i..n..g...\x1b[0m\r",
 					}
 
-					connectingSpeed := 0
+					connectingSpeed := 100
 
 					for _, l := range connecting {
 						for _, c := range strings.Split(l, "") {
@@ -361,7 +361,7 @@ func main() {
 							time.Sleep(time.Duration(connectingSpeed) * time.Millisecond)
 						}
 
-						connectingSpeed += 0
+						connectingSpeed += 50
 					}
 
 					connected := []string{
@@ -375,7 +375,7 @@ func main() {
 						"\n\r",
 					}
 
-					typewriteLines(channel, 0*time.Millisecond, connected)
+					typewriteLines(channel, 25*time.Millisecond, connected)
 
 					term := terminal.NewTerminal(channel, "\x1b[36m\\(•◡•)/ ~> \x1b[1m$\x1b[0m ")
 
