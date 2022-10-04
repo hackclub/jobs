@@ -6,13 +6,25 @@ import (
 	"io"
 	"net/http"
 	"strings"
+
+	md "github.com/JohannesKaufmann/html-to-markdown"
+	"github.com/charmbracelet/glamour"
 )
+
+// optimize for terminals with 72 char width
+//
+// i haven't figured out how to get the terminal width from the ssh session
+//
+// for the sake of time, i'm hardcoding it.
+const GlobalTerminalWidth = 72
 
 const organization = "hackclub"
 
 type Job struct {
-	Title   string `json:"title"`
-	Content string `json:"content"`
+	Id          int    `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Url         string `json:"job_post_url"`
 }
 
 type Client struct {
@@ -29,6 +41,49 @@ func (j Job) Slug() string {
 
 func (j Job) Filename() string {
 	return j.Slug() + ".md"
+}
+
+func (j Job) Render() (string, error) {
+	converter := md.NewConverter("", true, nil)
+	raw, err := converter.ConvertString(j.Description)
+	if err != nil {
+		return "", err
+	}
+
+	r, err := glamour.NewTermRenderer(
+		glamour.WithStandardStyle("dark"),
+		glamour.WithWordWrap(int(GlobalTerminalWidth-3)), // 72 default width, (-3 for space for line numbers)
+	)
+	if err != nil {
+		return "", err
+	}
+
+	rendered, err := r.Render("# " + j.Title + "\n" + raw)
+	if err != nil {
+		return "", err
+	}
+
+	rendered = strings.TrimSpace(rendered)
+
+	// custom formatting changes
+
+	var content string
+	lines := strings.Split(string(rendered), "\n")
+
+	for i, l := range lines {
+		// add line numbers (and left pad them)
+		content += fmt.Sprintf("%2v.", i) + l
+
+		// add new lines where needed
+		if i+1 < len(lines) {
+			content += "\n"
+		}
+	}
+
+	// change escaped \- to just - (for the signature at the end of the JDs)
+	content = strings.ReplaceAll(content, `\-`, "-")
+
+	return content, nil
 }
 
 func doRequest(request *http.Request, v interface{}) error {
@@ -79,4 +134,37 @@ func (c *Client) ListJobs() ([]Job, error) {
 	c.Jobs = &resp.Items
 
 	return resp.Items, nil
+}
+
+func (c *Client) FetchJob(slug string) (Job, error) {
+	jobs, err := c.ListJobs()
+	if err != nil {
+		return Job{}, err
+	}
+
+	for index, job := range jobs {
+		if job.Slug() == slug {
+			if job.Description == "" {
+				// fetch the job's description
+				request, err := http.NewRequest("GET", fmt.Sprintf("https://api.polymer.co/v1/hire/organizations/%s/jobs/%d", organization, job.Id), nil)
+				if err != nil {
+					return Job{}, err
+				}
+
+				var fetchedJob Job
+
+				err = doRequest(request, &fetchedJob)
+				if err != nil {
+					return Job{}, err
+				}
+
+				(*c.Jobs)[index].Description = fetchedJob.Description
+				job.Description = fetchedJob.Description
+			}
+
+			return job, nil
+		}
+	}
+
+	return Job{}, fmt.Errorf("job not found")
 }

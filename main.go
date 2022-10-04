@@ -21,13 +21,6 @@ import (
 	terminal "golang.org/x/term"
 )
 
-// optimize for terminals with 72 char width
-//
-// i haven't figured out how to get the terminal width from the ssh session
-//
-// for the sake of time, i'm hardcoding it.
-const globalTerminalWidth = 72
-
 func typewrite(w io.Writer, speed time.Duration, content string) {
 	chars := strings.Split(content, "")
 
@@ -211,7 +204,7 @@ func (g GistService) FileRendered(fileName string, darkOrLight string) (string, 
 
 	r, err := glamour.NewTermRenderer(
 		glamour.WithStandardStyle(darkOrLight),
-		glamour.WithWordWrap(int(globalTerminalWidth-3)), // 72 default width, (-3 for space for line numbers)
+		glamour.WithWordWrap(int(polymer.GlobalTerminalWidth-3)), // 72 default width, (-3 for space for line numbers)
 		glamour.WithBaseURL(g.FileURL(fileName)),
 	)
 	if err != nil {
@@ -453,8 +446,8 @@ list.
 
 								files := []string{"\x1b[1m" + "README.md" + "\x1b[0m"}
 
-								for _, jobs := range jobs {
-									files = append(files, jobs.Filename())
+								for _, job := range jobs {
+									files = append(files, job.Filename())
 								}
 
 								fmt.Fprintln(term, strings.Join(files, "\n"))
@@ -468,14 +461,15 @@ list.
 									return
 								}
 
-								argFile := args[0]
+								argFile := strings.TrimSuffix(args[0], ".md")
 								var darkOrLight string
 
 								if len(args) > 1 {
 									darkOrLight = args[1]
 								}
 
-								if !gists.FileExists(argFile) {
+								job, err := polymerClient.FetchJob(argFile)
+								if err != nil {
 									fmt.Fprintln(term, "meow! i can't find the file", argFile)
 									return
 								}
@@ -483,7 +477,7 @@ list.
 								meowText := "  m e e o o o w !  "
 								typewrite(term, 100*time.Millisecond, meowText)
 
-								content, err := gists.FileRendered(argFile, darkOrLight)
+								content, err := job.Render()
 								if err != nil {
 									fmt.Println(err)
 									fmt.Fprintln(term, "meow... i am having trouble accessing my brain (file retrieval error)")
@@ -505,7 +499,7 @@ list.
 									exitMsg += " ~ psst. you can switch to dark mode with `cat [file] dark` ~"
 								}
 
-								exitMsg += "\r\n\n easier to read this file online? " + gists.FileURL(argFile) + " ~(˘▾˘~)"
+								exitMsg += "\r\n\n easier to read this file online? " + job.Url + " ~(˘▾˘~)"
 
 								// if we don't need to page, print and exit
 								if len(contentLines) <= linesToShow {
