@@ -444,18 +444,23 @@ list.
 								fmt.Fprintln(term, "\npsst! try running `ls` to get started")
 							},
 							"ls": func(args []string) {
+								files := gists.FileNames()
+
+								if jobs, err := polymerClient.ListJobs(); err == nil {
+									for _, job := range jobs {
+										files = append(files, job.Filename())
+									}
+								}
+
+								for i, file := range files {
+									if file == "README.md" {
+										files[i] = "\x1b[1m" + file + "\x1b[0m"
+									} else if strings.HasPrefix(file, "hired_") {
+										files[i] = "\x1b[2m" + file + "\x1b[0m"
+									}
+								}
+
 								fmt.Fprintln(term, "\x1b[1;2myou dust off the shelves and find the following files laying about...\x1b[0m\n\r")
-
-								jobs, err := polymerClient.ListJobs()
-								if err != nil {
-									log.Fatal(err)
-								}
-
-								files := []string{"\x1b[1m" + "README.md" + "\x1b[0m"}
-
-								for _, job := range jobs {
-									files = append(files, job.Filename())
-								}
 
 								fmt.Fprintln(term, strings.Join(files, "\n"))
 							},
