@@ -468,28 +468,42 @@ list.
 									return
 								}
 
-								argFile := strings.TrimSuffix(args[0], ".md")
+								argFile := args[0]
 								var darkOrLight string
 
 								if len(args) > 1 {
 									darkOrLight = args[1]
 								}
 
-								job, err := polymerClient.FetchJob(argFile)
-								if err != nil {
+								content := ""
+								fileUrl := ""
+
+								if gists.FileExists(argFile) {
+									content, err = gists.FileRendered(argFile, darkOrLight)
+									fmt.Println(content)
+									if err != nil {
+										fmt.Println(err)
+										fmt.Fprintln(term, "meow... i am having trouble accessing my brain (file retrieval error)")
+										return
+									}
+
+									fileUrl = gists.FileURL(argFile)
+								} else if job, err := polymerClient.FetchJob(strings.TrimSuffix(argFile, ".md")); err == nil {
+									content, err = job.Render(darkOrLight)
+									if err != nil {
+										fmt.Println(err)
+										fmt.Fprintln(term, "meow... i am having trouble accessing my brain (file retrieval error)")
+										return
+									}
+
+									fileUrl = job.Url
+								} else {
 									fmt.Fprintln(term, "meow! i can't find the file", argFile)
 									return
 								}
 
 								meowText := "  m e e o o o w !  "
 								typewrite(term, 100*time.Millisecond, meowText)
-
-								content, err := job.Render(darkOrLight)
-								if err != nil {
-									fmt.Println(err)
-									fmt.Fprintln(term, "meow... i am having trouble accessing my brain (file retrieval error)")
-									return
-								}
 
 								// clear the meow
 								fmt.Fprint(term, "\r"+strings.Repeat(" ", len(meowText))+"\r")
@@ -506,7 +520,7 @@ list.
 									exitMsg += " ~ psst. you can switch to dark mode with `cat [file] dark` ~"
 								}
 
-								exitMsg += "\r\n\n easier to read this file online? " + job.Url + " ~(˘▾˘~)"
+								exitMsg += "\r\n\n easier to read this file online? " + fileUrl + " ~(˘▾˘~)"
 
 								// if we don't need to page, print and exit
 								if len(contentLines) <= linesToShow {
