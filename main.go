@@ -16,6 +16,7 @@ import (
 
 	"github.com/ahmetb/go-cursor"
 	"github.com/charmbracelet/glamour"
+	"github.com/hackclub/jobs/polymer"
 	"golang.org/x/crypto/ssh"
 	terminal "golang.org/x/term"
 )
@@ -264,17 +265,6 @@ func main() {
 
 	files := [][]string{
 		{"README.md", "https://github.com/hackclub/jobs/blob/main/directory/README.md"},
-		{"hired_tech_lead.md", "https://github.com/hackclub/jobs/blob/main/directory/tech_lead.md"},
-		{"hired_philanthropy_position.md", "https://github.com/hackclub/jobs/blob/main/directory/philanthropy_position.md"},
-		{"hired_education_engineer.md", "https://github.com/hackclub/jobs/blob/main/directory/education_engineer.md"},
-		{"hired_executive_assistant.md", "https://github.com/hackclub/jobs/blob/main/directory/executive_assistant.md"},
-		{"hired_communications_manager.md", "https://github.com/hackclub/jobs/blob/main/directory/communications_manager.md"},
-		{"hired_club_operations_lead.md", "https://github.com/hackclub/jobs/blob/main/directory/club-operations-lead.md"},
-		{"hired_events_designer.md", "https://github.com/hackclub/jobs/blob/main/directory/events_designer.md"},
-		{"hired_clubs_lead.md", "https://gist.github.com/zachlatta/ef83904bfcfddc04bc823355e5bcd280"},
-		{"hired_bank_ops_associate.md", "https://github.com/hackclub/v3/blob/main/components/jobs/bank-ops-associate/jd.mdx"},
-		{"hired_bank_ops_lead.md", "https://github.com/hackclub/v3/blob/main/components/jobs/bank-ops-lead/jd.mdx"},
-		{"hired_game_designer.md", "https://gist.github.com/zachlatta/a00579cabbd94c98561377eaf369e9a6"},
 	}
 
 	gists := NewGistService(files)
@@ -363,7 +353,7 @@ func main() {
 						"\x1b[35m...c..o..n..n..e..c..t..i..n..g...\x1b[0m\r",
 					}
 
-					connectingSpeed := 100
+					connectingSpeed := 0
 
 					for _, l := range connecting {
 						for _, c := range strings.Split(l, "") {
@@ -371,7 +361,7 @@ func main() {
 							time.Sleep(time.Duration(connectingSpeed) * time.Millisecond)
 						}
 
-						connectingSpeed += 50
+						connectingSpeed += 0
 					}
 
 					connected := []string{
@@ -385,7 +375,7 @@ func main() {
 						"\n\r",
 					}
 
-					typewriteLines(channel, 25*time.Millisecond, connected)
+					typewriteLines(channel, 0*time.Millisecond, connected)
 
 					term := terminal.NewTerminal(channel, "\x1b[36m\\(•◡•)/ ~> \x1b[1m$\x1b[0m ")
 
@@ -453,16 +443,18 @@ list.
 								fmt.Fprintln(term, "\npsst! try running `ls` to get started")
 							},
 							"ls": func(args []string) {
-								files := gists.FileNames()
-								for i, file := range files {
-									if file == "README.md" {
-										files[i] = "\x1b[1m" + file + "\x1b[0m"
-									} else if strings.HasPrefix(file, "hired_") {
-										files[i] = "\x1b[2m" + file + "\x1b[0m"
-									}
+								fmt.Fprintln(term, "\x1b[1;2myou dust off the shelves and find the following files laying about...\x1b[0m\n\r")
+
+								jobs, err := polymer.ListJobs()
+								if err != nil {
+									log.Fatal(err)
 								}
 
-								fmt.Fprintln(term, "\x1b[1;2myou dust off the shelves and find the following files laying about...\x1b[0m\n\r")
+								files := []string{"\x1b[1m" + "README.md" + "\x1b[0m"}
+
+								for _, jobs := range jobs {
+									files = append(files, jobs.Filename())
+								}
 
 								fmt.Fprintln(term, strings.Join(files, "\n"))
 							},
