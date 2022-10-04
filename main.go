@@ -268,6 +268,7 @@ func main() {
 	}
 
 	gists := NewGistService(files)
+	polymerClient := polymer.Client{}
 
 	config := &ssh.ServerConfig{
 		NoClientAuth: true,
@@ -445,7 +446,7 @@ list.
 							"ls": func(args []string) {
 								fmt.Fprintln(term, "\x1b[1;2myou dust off the shelves and find the following files laying about...\x1b[0m\n\r")
 
-								jobs, err := polymer.ListJobs()
+								jobs, err := polymerClient.ListJobs()
 								if err != nil {
 									log.Fatal(err)
 								}

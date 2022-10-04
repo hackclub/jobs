@@ -11,7 +11,12 @@ import (
 const organization = "hackclub"
 
 type Job struct {
-	Title string `json:"title"`
+	Title   string `json:"title"`
+	Content string `json:"content"`
+}
+
+type Client struct {
+	Jobs *[]Job
 }
 
 func sluggify(title string) string {
@@ -51,7 +56,12 @@ func doRequest(request *http.Request, v interface{}) error {
 	return nil
 }
 
-func ListJobs() ([]Job, error) {
+func (c *Client) ListJobs() ([]Job, error) {
+	if c.Jobs != nil {
+		fmt.Println("fetching jobs from cache")
+		return *c.Jobs, nil
+	}
+
 	request, err := http.NewRequest("GET", fmt.Sprintf("https://api.polymer.co/v1/hire/organizations/%s/jobs", organization), nil)
 	if err != nil {
 		return nil, err
@@ -65,6 +75,8 @@ func ListJobs() ([]Job, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	c.Jobs = &resp.Items
 
 	return resp.Items, nil
 }
