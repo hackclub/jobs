@@ -302,7 +302,7 @@ list.
 								meowText := "  m e e o o o w !  "
 								typewrite(term, 100*time.Millisecond, meowText)
 
-								content, err := job.Render()
+								content, err := job.Render(darkOrLight)
 								if err != nil {
 									fmt.Println(err)
 									fmt.Fprintln(term, "meow... i am having trouble accessing my brain (file retrieval error)")

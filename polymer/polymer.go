@@ -2,6 +2,7 @@ package polymer
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -43,22 +44,32 @@ func (j Job) Filename() string {
 	return j.Slug() + ".md"
 }
 
-func (j Job) Render() (string, error) {
+func (j Job) Render(darkOrLight string) (string, error) {
+	if darkOrLight != "light" && darkOrLight != "dark" && darkOrLight != "" {
+		return "", errors.New("invalid style")
+	}
+
+	if darkOrLight == "" {
+		darkOrLight = "dark"
+	}
+
 	converter := md.NewConverter("", true, nil)
 	raw, err := converter.ConvertString(j.Description)
 	if err != nil {
 		return "", err
 	}
 
+	raw = fmt.Sprintf("# %s\n%s\n\nApply here! %s", j.Title, raw, j.Url)
+
 	r, err := glamour.NewTermRenderer(
-		glamour.WithStandardStyle("dark"),
+		glamour.WithStandardStyle(darkOrLight),
 		glamour.WithWordWrap(int(GlobalTerminalWidth-3)), // 72 default width, (-3 for space for line numbers)
 	)
 	if err != nil {
 		return "", err
 	}
 
-	rendered, err := r.Render("# " + j.Title + "\n" + raw)
+	rendered, err := r.Render(raw)
 	if err != nil {
 		return "", err
 	}
