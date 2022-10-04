@@ -59,7 +59,7 @@ func (j Job) Render(darkOrLight string) (string, error) {
 		return "", err
 	}
 
-	raw = fmt.Sprintf("# %s\n%s\n\nApply here! %s", j.Title, raw, j.Url)
+	raw = fmt.Sprintf("# %s\n%s\n\n**Apply here!** %s", j.Title, raw, j.Url)
 
 	r, err := glamour.NewTermRenderer(
 		glamour.WithStandardStyle(darkOrLight),
@@ -83,7 +83,7 @@ func (j Job) Render(darkOrLight string) (string, error) {
 
 	for i, l := range lines {
 		// add line numbers (and left pad them)
-		content += fmt.Sprintf("%2v.", i) + l
+		content += fmt.Sprintf("%2v.", i+1) + l
 
 		// add new lines where needed
 		if i+1 < len(lines) {
