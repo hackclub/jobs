@@ -124,7 +124,6 @@ func doRequest(request *http.Request, v interface{}) error {
 
 func (c *Client) ListJobs() ([]Job, error) {
 	if c.Jobs != nil {
-		fmt.Println("fetching jobs from cache")
 		return *c.Jobs, nil
 	}
 

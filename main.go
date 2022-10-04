@@ -485,7 +485,6 @@ list.
 
 								if gists.FileExists(argFile) {
 									content, err = gists.FileRendered(argFile, darkOrLight)
-									fmt.Println(content)
 									if err != nil {
 										fmt.Println(err)
 										fmt.Fprintln(term, "meow... i am having trouble accessing my brain (file retrieval error)")
