@@ -1,17 +1,21 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"net"
+	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"text/tabwriter"
 	"time"
 
 	"github.com/ahmetb/go-cursor"
+	"github.com/charmbracelet/glamour"
 	"github.com/hackclub/jobs/polymer"
 	"golang.org/x/crypto/ssh"
 	terminal "golang.org/x/term"
@@ -64,12 +68,183 @@ func (g GistService) Count() int {
 	return len(g.files)
 }
 
+// returns URL if file exists, empty string if not
+func (g GistService) FileURL(fileName string) string {
+	var url string
+
+	for _, f := range g.files {
+		if fileName == f[0] {
+			url = f[1]
+		}
+	}
+
+	return url
+}
+
+func (g GistService) FileExists(fileName string) bool {
+	return g.FileURL(fileName) != ""
+}
+
 type GistServiceFileType int
 
 const (
 	GistServiceFileTypeGist GistServiceFileType = iota
 	GistServiceFileTypeRepoFile
 )
+
+func (g GistService) urlType(fileURL string) (GistServiceFileType, error) {
+	u, err := url.Parse(fileURL)
+	if err != nil {
+		return -1, err
+	}
+
+	if strings.HasPrefix(u.Host, "gist") {
+		return GistServiceFileTypeGist, nil
+	}
+
+	if strings.Contains(u.Path, "/blob/") {
+		return GistServiceFileTypeRepoFile, nil
+	}
+
+	return -1, errors.New("GistServiceFileType of fileURL not recognized")
+}
+
+func (g GistService) fetchRemoteGistContents(gistURL string) (string, error) {
+	fileType, err := g.urlType(gistURL)
+	if err != nil {
+		return "", err
+	}
+
+	var rawGistURL string
+	switch fileType {
+	case GistServiceFileTypeGist:
+		rawGistURL = gistURL + "/raw"
+	case GistServiceFileTypeRepoFile:
+		u, err := url.Parse(gistURL)
+		if err != nil {
+			return "", err
+		}
+
+		u.Path = strings.Replace(u.Path, "blob/", "", 1)
+
+		u.Host = "raw.githubusercontent.com"
+
+		rawGistURL = u.String()
+	default:
+		return "", errors.New("GistServiceFileType case not handled")
+	}
+
+	fmt.Println(rawGistURL)
+
+	resp, err := http.Get(rawGistURL)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	return string(body), nil
+}
+
+func (g GistService) FileContents(fileName string) (string, error) {
+	gistURL := g.FileURL(fileName)
+	if gistURL == "" {
+		return "", errors.New("file " + fileName + " does not exist")
+	}
+
+	var cachedGist gistCache
+	if cached, exists := g.cachedGists[fileName]; exists {
+		cachedGist = cached
+	}
+
+	if time.Now().After(cachedGist.Expiration) {
+		content, err := g.fetchRemoteGistContents(gistURL)
+		if err != nil {
+			return "", fmt.Errorf("error fetching remote gist: %v", err)
+		}
+
+		cachedGist.Content = content
+		cachedGist.Expiration = time.Now().Add(5 * time.Minute)
+	}
+
+	g.cachedGists[fileName] = cachedGist
+
+	return cachedGist.Content, nil
+}
+
+func (g GistService) FileRendered(fileName string, darkOrLight string) (string, error) {
+	var cachedGist gistCache
+	if cached, exists := g.cachedGists[fileName]; exists {
+		cachedGist = cached
+	}
+
+	if darkOrLight != "light" && darkOrLight != "dark" && darkOrLight != "" {
+		return "", errors.New("invalid style")
+	}
+
+	if darkOrLight == "" {
+		darkOrLight = "dark"
+	}
+
+	// if possible, just return the prerendered stuff we have
+	if time.Now().Before(cachedGist.Expiration) && cachedGist.Rendered != "" {
+		return cachedGist.Rendered, nil
+	}
+
+	// else, do the whole shebang...
+
+	raw, err := g.FileContents(fileName)
+	if err != nil {
+		return "", err
+	}
+
+	r, err := glamour.NewTermRenderer(
+		glamour.WithStandardStyle(darkOrLight),
+		glamour.WithWordWrap(int(polymer.GlobalTerminalWidth-3)), // 72 default width, (-3 for space for line numbers)
+		glamour.WithBaseURL(g.FileURL(fileName)),
+	)
+	if err != nil {
+		return "", err
+	}
+
+	rendered, err := r.Render(raw)
+	if err != nil {
+		return "", err
+	}
+
+	// custom formatting changes
+
+	var content string
+	lines := strings.Split(string(rendered), "\n")
+
+	for i, l := range lines {
+		// remove first and last two lines (which are blank)
+		if i == 0 || i >= len(lines)-2 {
+			continue
+		}
+
+		// add line numbers (and left pad them)
+		content += fmt.Sprintf("%2v.", i) + l
+
+		// add new lines where needed
+		if i+1 < len(lines) {
+			content += "\n"
+		}
+	}
+
+	// change escaped \- to just - (for the signature at the end of the JDs)
+	content = strings.ReplaceAll(content, `\-`, "-")
+
+	cachedGist.Rendered = content
+
+	g.cachedGists[fileName] = cachedGist
+
+	return cachedGist.Rendered, nil
+}
 
 func main() {
 	var sshPort string
