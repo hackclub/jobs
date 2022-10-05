@@ -16,16 +16,10 @@ import (
 
 	"github.com/ahmetb/go-cursor"
 	"github.com/charmbracelet/glamour"
+	"github.com/hackclub/jobs/polymer"
 	"golang.org/x/crypto/ssh"
 	terminal "golang.org/x/term"
 )
-
-// optimize for terminals with 72 char width
-//
-// i haven't figured out how to get the terminal width from the ssh session
-//
-// for the sake of time, i'm hardcoding it.
-const globalTerminalWidth = 72
 
 func typewrite(w io.Writer, speed time.Duration, content string) {
 	chars := strings.Split(content, "")
@@ -210,7 +204,7 @@ func (g GistService) FileRendered(fileName string, darkOrLight string) (string, 
 
 	r, err := glamour.NewTermRenderer(
 		glamour.WithStandardStyle(darkOrLight),
-		glamour.WithWordWrap(int(globalTerminalWidth-3)), // 72 default width, (-3 for space for line numbers)
+		glamour.WithWordWrap(int(polymer.GlobalTerminalWidth-3)), // 72 default width, (-3 for space for line numbers)
 		glamour.WithBaseURL(g.FileURL(fileName)),
 	)
 	if err != nil {
@@ -264,20 +258,10 @@ func main() {
 
 	files := [][]string{
 		{"README.md", "https://github.com/hackclub/jobs/blob/main/directory/README.md"},
-		{"hired_tech_lead.md", "https://github.com/hackclub/jobs/blob/main/directory/tech_lead.md"},
-		{"hired_philanthropy_position.md", "https://github.com/hackclub/jobs/blob/main/directory/philanthropy_position.md"},
-		{"hired_education_engineer.md", "https://github.com/hackclub/jobs/blob/main/directory/education_engineer.md"},
-		{"hired_executive_assistant.md", "https://github.com/hackclub/jobs/blob/main/directory/executive_assistant.md"},
-		{"hired_communications_manager.md", "https://github.com/hackclub/jobs/blob/main/directory/communications_manager.md"},
-		{"hired_club_operations_lead.md", "https://github.com/hackclub/jobs/blob/main/directory/club-operations-lead.md"},
-		{"hired_events_designer.md", "https://github.com/hackclub/jobs/blob/main/directory/events_designer.md"},
-		{"hired_clubs_lead.md", "https://gist.github.com/zachlatta/ef83904bfcfddc04bc823355e5bcd280"},
-		{"hired_bank_ops_associate.md", "https://github.com/hackclub/v3/blob/main/components/jobs/bank-ops-associate/jd.mdx"},
-		{"hired_bank_ops_lead.md", "https://github.com/hackclub/v3/blob/main/components/jobs/bank-ops-lead/jd.mdx"},
-		{"hired_game_designer.md", "https://gist.github.com/zachlatta/a00579cabbd94c98561377eaf369e9a6"},
 	}
 
 	gists := NewGistService(files)
+	polymerClient := polymer.Client{}
 
 	config := &ssh.ServerConfig{
 		NoClientAuth: true,
@@ -410,6 +394,13 @@ func main() {
 						files := gists.FileNames()
 						fileMatches := []string{}
 
+						jobs, err := polymerClient.ListJobs()
+						if err == nil {
+							for _, j := range jobs {
+								files = append(files, j.Filename())
+							}
+						}
+
 						for _, fileName := range files {
 							if strings.HasPrefix(fileName, givenFile) {
 								fileMatches = append(fileMatches, fileName)
@@ -454,6 +445,13 @@ list.
 							},
 							"ls": func(args []string) {
 								files := gists.FileNames()
+
+								if jobs, err := polymerClient.ListJobs(); err == nil {
+									for _, job := range jobs {
+										files = append(files, job.Filename())
+									}
+								}
+
 								for i, file := range files {
 									if file == "README.md" {
 										files[i] = "\x1b[1m" + file + "\x1b[0m"
@@ -482,20 +480,34 @@ list.
 									darkOrLight = args[1]
 								}
 
-								if !gists.FileExists(argFile) {
+								content := ""
+								fileUrl := ""
+
+								if gists.FileExists(argFile) {
+									content, err = gists.FileRendered(argFile, darkOrLight)
+									if err != nil {
+										fmt.Println(err)
+										fmt.Fprintln(term, "meow... i am having trouble accessing my brain (file retrieval error)")
+										return
+									}
+
+									fileUrl = gists.FileURL(argFile)
+								} else if job, err := polymerClient.FetchJob(strings.TrimSuffix(argFile, ".md")); err == nil {
+									content, err = job.Render(darkOrLight)
+									if err != nil {
+										fmt.Println(err)
+										fmt.Fprintln(term, "meow... i am having trouble accessing my brain (file retrieval error)")
+										return
+									}
+
+									fileUrl = job.Url
+								} else {
 									fmt.Fprintln(term, "meow! i can't find the file", argFile)
 									return
 								}
 
 								meowText := "  m e e o o o w !  "
 								typewrite(term, 100*time.Millisecond, meowText)
-
-								content, err := gists.FileRendered(argFile, darkOrLight)
-								if err != nil {
-									fmt.Println(err)
-									fmt.Fprintln(term, "meow... i am having trouble accessing my brain (file retrieval error)")
-									return
-								}
 
 								// clear the meow
 								fmt.Fprint(term, "\r"+strings.Repeat(" ", len(meowText))+"\r")
@@ -512,7 +524,7 @@ list.
 									exitMsg += " ~ psst. you can switch to dark mode with `cat [file] dark` ~"
 								}
 
-								exitMsg += "\r\n\n easier to read this file online? " + gists.FileURL(argFile) + " ~(˘▾˘~)"
+								exitMsg += "\r\n\n easier to read this file online? " + fileUrl + " ~(˘▾˘~)"
 
 								// if we don't need to page, print and exit
 								if len(contentLines) <= linesToShow {
