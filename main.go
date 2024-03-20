@@ -578,6 +578,9 @@ list.
 
 								fmt.Fprintln(term, exitMsg)
 							},
+							"dog": func(args []string) {
+								typewrite(term, 75*time.Millisecond, "cats are much better.\n\r")
+							},
 							"pwd": func(args []string) {
 								typewrite(term, 75*time.Millisecond, "you look up, you look down, you look all around. you are completely and utterly lost.\n\r")
 							},
