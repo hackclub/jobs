@@ -1,0 +1,9 @@
+services:
+  ssh:
+    build: .
+    ports:
+      - 1337:9999
+    labels:
+      - traefik.http.middlewares.jobs-redirect.redirectregex.regex=^(http|https)://jobs\\.hackclub\\.com/(.*)
+      - traefik.http.middlewares.jobs-redirect.redirectregex.replacement=https://hackclub.com/jobs/$${1}
+      - traefik.http.middlewares.jobs-redirect.redirectregex.permanent=true
