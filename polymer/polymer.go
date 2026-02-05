@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"regexp"
 	"strings"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
@@ -32,8 +33,15 @@ type Client struct {
 	Jobs *[]Job
 }
 
+var nonAlphanumeric = regexp.MustCompile(`[^a-z0-9-]+`)
+var multipleHyphens = regexp.MustCompile(`-{2,}`)
+
 func sluggify(title string) string {
-	return strings.ReplaceAll(strings.ToLower(title), " ", "-")
+	slug := strings.ToLower(title)
+	slug = nonAlphanumeric.ReplaceAllString(slug, "-")
+	slug = multipleHyphens.ReplaceAllString(slug, "-")
+	slug = strings.Trim(slug, "-")
+	return slug
 }
 
 func (j Job) Slug() string {
