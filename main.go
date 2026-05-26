@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync/atomic"
 	"text/tabwriter"
 	"time"
 
@@ -21,18 +22,40 @@ import (
 	terminal "golang.org/x/term"
 )
 
-func typewrite(w io.Writer, speed time.Duration, content string) {
+func typewrite(w io.Writer, speed time.Duration, content string, intr <-chan struct{}) {
 	chars := strings.Split(content, "")
 
 	for _, c := range chars {
+		if intr != nil {
+			select {
+			case <-intr:
+				return
+			default:
+			}
+		}
 		fmt.Fprint(w, c)
-		time.Sleep(speed)
+		if intr != nil {
+			select {
+			case <-intr:
+				return
+			case <-time.After(speed):
+			}
+		} else {
+			time.Sleep(speed)
+		}
 	}
 }
 
-func typewriteLines(w io.Writer, speed time.Duration, lines []string) {
+func typewriteLines(w io.Writer, speed time.Duration, lines []string, intr <-chan struct{}) {
 	for _, line := range lines {
-		typewrite(w, speed, line)
+		typewrite(w, speed, line, intr)
+		if intr != nil {
+			select {
+			case <-intr:
+				return
+			default:
+			}
+		}
 	}
 }
 
@@ -246,6 +269,33 @@ func (g GistService) FileRendered(fileName string, darkOrLight string) (string, 
 	return cachedGist.Rendered, nil
 }
 
+type ctrlCReader struct {
+	io.Reader
+	interrupt chan struct{}
+	sawCtrlC  int32 // atomic
+}
+
+func (r *ctrlCReader) Read(p []byte) (int, error) {
+	n, err := r.Reader.Read(p)
+	if n > 0 {
+		for i := 0; i < n; i++ {
+			if p[i] == 3 { // ETX / Ctrl-C / SIGINT
+				atomic.StoreInt32(&r.sawCtrlC, 1)
+				select {
+				case r.interrupt <- struct{}{}:
+				default:
+				}
+			}
+		}
+	}
+	return n, err
+}
+
+type readWriter struct {
+	io.Reader
+	io.Writer
+}
+
 func main() {
 	var sshPort string
 
@@ -369,9 +419,14 @@ func main() {
 						"\n\r",
 					}
 
-					typewriteLines(channel, 25*time.Millisecond, connected)
+					typewriteLines(channel, 25*time.Millisecond, connected, nil)
 
-					term := terminal.NewTerminal(channel, "\x1b[36m\\(•◡•)/ ~> \x1b[1m$\x1b[0m ")
+					intr := &ctrlCReader{
+						Reader:    channel,
+						interrupt: make(chan struct{}, 1),
+					}
+					rw := &readWriter{intr, channel}
+					term := terminal.NewTerminal(rw, "\x1b[36m\\(•◡•)/ ~> \x1b[1m$\x1b[0m ")
 
 					term.AutoCompleteCallback = func(line string, pos int, key rune) (newLine string, newPos int, ok bool) {
 						// only autocomplete when they hit tab
@@ -419,8 +474,8 @@ func main() {
 					}
 
 					for {
-						cmds := map[string]func([]string){
-							"help": func(args []string) {
+						cmds := map[string]func([]string, <-chan struct{}){
+							"help": func(args []string, intr <-chan struct{}) {
 								fmt.Fprintln(term, "\x1b[1mHACK CLUB JOBS TERMINAL\x1b[0m \x1b[2mversion 1.0.1-release (x86_64)\x1b[0m"+`
 These shell commands are defined internally. Type `+"`help`"+` to see this
 list.
@@ -443,7 +498,13 @@ list.
 
 								fmt.Fprintln(term, "\npsst! try running `ls` to get started")
 							},
-							"ls": func(args []string) {
+							"ls": func(args []string, intr <-chan struct{}) {
+								select {
+								case <-intr:
+									return
+								default:
+								}
+
 								files := gists.FileNames()
 
 								if jobs, err := polymerClient.ListJobs(); err == nil {
@@ -464,10 +525,16 @@ list.
 
 								fmt.Fprintln(term, strings.Join(files, "\n"))
 							},
-							"clear": func(args []string) {
+							"clear": func(args []string, intr <-chan struct{}) {
 								fmt.Fprint(term, "\x1b[H\x1b[2J")
 							},
-							"cat": func(args []string) {
+							"cat": func(args []string, intr <-chan struct{}) {
+								select {
+								case <-intr:
+									return
+								default:
+								}
+
 								if len(args) == 0 {
 									fmt.Fprintln(term, "meow! please pass me a file! i can't do anything without one!")
 									return
@@ -484,6 +551,11 @@ list.
 								fileUrl := ""
 
 								if gists.FileExists(argFile) {
+									select {
+									case <-intr:
+										return
+									default:
+									}
 									content, err = gists.FileRendered(argFile, darkOrLight)
 									if err != nil {
 										fmt.Println(err)
@@ -493,6 +565,11 @@ list.
 
 									fileUrl = gists.FileURL(argFile)
 								} else if job, err := polymerClient.FetchJob(strings.TrimSuffix(argFile, ".md")); err == nil {
+									select {
+									case <-intr:
+										return
+									default:
+									}
 									content, err = job.Render(darkOrLight)
 									if err != nil {
 										fmt.Println(err)
@@ -507,7 +584,7 @@ list.
 								}
 
 								meowText := "  m e e o o o w !  "
-								typewrite(term, 100*time.Millisecond, meowText)
+								typewrite(term, 100*time.Millisecond, meowText, intr)
 
 								// clear the meow
 								fmt.Fprint(term, "\r"+strings.Repeat(" ", len(meowText))+"\r")
@@ -578,19 +655,19 @@ list.
 
 								fmt.Fprintln(term, exitMsg)
 							},
-							"dog": func(args []string) {
-								typewrite(term, 75*time.Millisecond, "cats are much better.\n\r")
+							"dog": func(args []string, intr <-chan struct{}) {
+								typewrite(term, 75*time.Millisecond, "cats are much better.\n\r", intr)
 							},
-							"pwd": func(args []string) {
-								typewrite(term, 75*time.Millisecond, "you look up, you look down, you look all around. you are completely and utterly lost.\n\r")
+							"pwd": func(args []string, intr <-chan struct{}) {
+								typewrite(term, 75*time.Millisecond, "you look up, you look down, you look all around. you are completely and utterly lost.\n\r", intr)
 							},
-							"cd": func(args []string) {
-								typewrite(term, 75*time.Millisecond, "what even IS a directory? this is the HACK CLUB JOBS TERMINAL. there are only jobs here.\r\n")
+							"cd": func(args []string, intr <-chan struct{}) {
+								typewrite(term, 75*time.Millisecond, "what even IS a directory? this is the HACK CLUB JOBS TERMINAL. there are only jobs here.\r\n", intr)
 							},
-							"whoami": func(args []string) {
-								typewrite(term, 75*time.Millisecond, "who ARE you? why are we here? what IS this all about?\r\n")
+							"whoami": func(args []string, intr <-chan struct{}) {
+								typewrite(term, 75*time.Millisecond, "who ARE you? why are we here? what IS this all about?\r\n", intr)
 							},
-							"exit": func(args []string) {
+							"exit": func(args []string, intr <-chan struct{}) {
 								goodbye := []string{
 									"\x1b[1;34mJOBS TERMINAL OUT. SEE YOU LATER!\x1b[0m\r\n",
 									"CODE AT https://github.com/hackclub/jobs\r\n",
@@ -598,7 +675,7 @@ list.
 									"(~˘▾˘)~\n\n",
 								}
 
-								typewriteLines(term, 25*time.Millisecond, goodbye)
+								typewriteLines(term, 25*time.Millisecond, goodbye, intr)
 
 								channel.Close()
 							},
@@ -606,6 +683,10 @@ list.
 
 						line, err := term.ReadLine()
 						if err != nil {
+							if atomic.LoadInt32(&intr.sawCtrlC) == 1 {
+								atomic.StoreInt32(&intr.sawCtrlC, 0)
+								continue
+							}
 							break
 						}
 
@@ -619,7 +700,7 @@ list.
 
 						if cmd, ok := cmds[inputCmd]; ok {
 							fmt.Fprintln(term, "")
-							cmd(inputArgs)
+							cmd(inputArgs, intr.interrupt)
 							fmt.Fprintln(term, "")
 						} else if inputCmd != "" {
 							fmt.Fprintln(term, "")
