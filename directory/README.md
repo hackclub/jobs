@@ -14,4 +14,4 @@ I'm the ghost in this machine and I'm thrilled to have you here.
 
 At HQ, we're a small team trying to build what we wish we had in high school. Nearly everything we do is open source at https://github.com/hackclub. Even our finances are 100% open at https://bank.hackclub.com/hq.
 
-Hack Club HQ currently has [a small team of full-time employees](https://hackclub.com/team/) in Shelburne, VT. We'd love for you to join us!
+Hack Club HQ currently has [a small team of full-time employees](https://hackclub.com/team/) in Burlington, VT. We'd love for you to join us!
